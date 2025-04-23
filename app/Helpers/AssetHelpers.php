@@ -408,6 +408,10 @@ function fillUserAssets($assets, $sender, $recipient, $logType, $data, $selected
             $service = new \App\Services\PetManager;
             foreach ($contents as $asset) {
                 if (!$service->creditPet($sender, $recipient, $logType, $data, $asset['asset'], $asset['quantity'])) {
+                    foreach ($service->errors()->getMessages()['error'] as $error) {
+                        flash($error)->error();
+                    }
+                    
                     return false;
                 }
             }
