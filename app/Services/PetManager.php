@@ -667,7 +667,7 @@ class PetManager extends Service {
             }
 
             // Create drop information for the pet, if relevant
-            if ($pet->hasDrops) {
+            if ($variant ? $variant->hasDrops : $pet->hasDrops) {
                 $drop = PetDrop::create([
                     'drop_id'         => $user_pet->pet->dropData->id,
                     'user_pet_id'     => $user_pet->id,
