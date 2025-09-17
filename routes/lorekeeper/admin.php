@@ -238,9 +238,8 @@ Route::group(['prefix' => 'data', 'namespace' => 'Data', 'middleware' => 'power:
     Route::post('prompts/create', 'PromptController@postCreateEditPrompt');
     Route::post('prompts/edit/{id?}', 'PromptController@postCreateEditPrompt');
     Route::post('prompts/delete/{id}', 'PromptController@postDeletePrompt');
-    
-    
-    # Criteria
+
+    // Criteria
     Route::get('criteria', 'CriterionController@getIndex');
     Route::get('criteria/create', 'CriterionController@getCreateEditCriterion');
     Route::post('criteria/create', 'CriterionController@postCreateEditCriterion');

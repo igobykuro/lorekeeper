@@ -4,15 +4,11 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class AddCriteriaAdditions extends Migration
-{
+class AddCriteriaAdditions extends Migration {
     /**
      * Run the migrations.
-     *
-     * @return void
      */
-    public function up()
-    {
+    public function up() {
         Schema::table('prompt_criteria', function (Blueprint $table) {
             //gonna set this to nullable to not break anything
             //will default to the criteria's original currency if not set
@@ -41,7 +37,7 @@ class AddCriteriaAdditions extends Migration
             $table->integer('criterion_id')->unsigned();
             $table->integer('criteriondefault_id')->unsigned();
             $table->text('min_requirements')->nullable()->default(null);
-             //gonna set this to nullable to not break anything
+            //gonna set this to nullable to not break anything
             //will default to the criteria's original currency if not set
             $table->integer('criterion_currency_id')->unsigned()->nullable()->default(null);
         });
@@ -49,11 +45,8 @@ class AddCriteriaAdditions extends Migration
 
     /**
      * Reverse the migrations.
-     *
-     * @return void
      */
-    public function down()
-    {
+    public function down() {
         Schema::dropIfExists('criteria_defaults');
         Schema::dropIfExists('default_criteria');
         Schema::table('prompt_criteria', function (Blueprint $table) {

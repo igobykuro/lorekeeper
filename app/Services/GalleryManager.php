@@ -5,8 +5,8 @@ namespace App\Services;
 use App\Facades\Notifications;
 use App\Facades\Settings;
 use App\Models\Character\Character;
-use App\Models\Currency\Currency;
 use App\Models\Criteria\Criterion;
+use App\Models\Currency\Currency;
 use App\Models\Gallery\Gallery;
 use App\Models\Gallery\GalleryCharacter;
 use App\Models\Gallery\GalleryCollaborator;
@@ -104,8 +104,8 @@ class GalleryManager extends Service {
             ]);
 
             $data = $this->populateData($data);
-			
-			$withCriteriaSelected = isset($currencyFormData) && $currencyFormData && isset($currencyFormData['criterion']) ? array_filter($currencyFormData['criterion'], function ($obj) {
+
+            $withCriteriaSelected = isset($currencyFormData) && $currencyFormData && isset($currencyFormData['criterion']) ? array_filter($currencyFormData['criterion'], function ($obj) {
                 return isset($obj['id']);
             }) : [];
             if (count($withCriteriaSelected) > 0) {
@@ -591,7 +591,7 @@ class GalleryManager extends Service {
 
                 $grantedList = [];
                 $awardQuantity = [];
-				$currency = [];
+                $currency = [];
 
                 $shouldDivideRewards = Settings::get('gallery_rewards_divided') === '1';
 
@@ -656,7 +656,6 @@ class GalleryManager extends Service {
                     'awardQuantity' => $awardQuantity,
                     'staff'         => $user->id,
                 ])->toJson();
-
 
                 // Update the submission with the new data and mark it as processed
                 $submission->update([

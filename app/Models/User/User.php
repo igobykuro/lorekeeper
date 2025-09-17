@@ -388,7 +388,6 @@ class User extends Authenticatable implements MustVerifyEmail {
         return $this->avatar;
     }
 
-
     /**
      * Gets the display URL for a user's avatar, or the default avatar if they don't have one.
      *
