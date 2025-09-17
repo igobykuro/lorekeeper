@@ -119,7 +119,7 @@
                             <hr />
                             <div id="totals">
                                 @include('galleries._submission_totals', ['totals' => $totals, 'collaboratorsCount' => $collaboratorsCount])
-						{{-- <hr />
+                                {{-- <hr />
                         @if (isset($submission->data['total']))
                             <h6>Form Responses:</h6>
                             <div class="row mb-2">

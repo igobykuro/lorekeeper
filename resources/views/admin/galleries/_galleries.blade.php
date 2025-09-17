@@ -15,7 +15,7 @@
                 </h6>
             </div>
         </div>
-		<div class="col-6 col-md-1">
+        <div class="col-6 col-md-1">
             <div class="logs-table-cell">
                 {!! $gallery->criteria->count() > 0 ? '<i class="text-success fas fa-check"></i>' : '-' !!}
             </div>

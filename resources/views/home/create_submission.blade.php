@@ -25,8 +25,8 @@
         </div>
     @else
         @include('home._submission_form', ['submission' => $submission, 'criteria' => $isClaim ? null : $criteria, 'isClaim' => $isClaim, 'userGallerySubmissions' => $userGallerySubmissions])
-		</div>
-		
+        </div>
+
         <div class="modal fade" id="confirmationModal" tabindex="-1" role="dialog">
             <div class="modal-dialog" role="document">
 
@@ -98,14 +98,14 @@
                     var $prompt = $('#prompt');
                     var $rewards = $('#rewards');
                     var $form = $('#prompt-form');
-                    $form.load('{{url('submissions/new/form') }}/' + $prompt.val());
+                    $form.load('{{ url('submissions/new/form') }}/' + $prompt.val());
 
                     $prompt.selectize();
                     $prompt.on('change', function(e) {
                         $rewards.load('{{ url('submissions/new/prompt') }}/' + $(this).val());
                         $('#copy-calc').load('{{ url('criteria/prompt') }}/' + $(this).val());
                         if ($(this).val()) $('#criterion-section').removeClass('hide');
-                        $form.load('{{url('submissions/new/form') }}/' + $(this).val());
+                        $form.load('{{ url('submissions/new/form') }}/' + $(this).val());
                     });
                 @endif
 
@@ -134,8 +134,8 @@
                     $submissionForm.attr('action', '{{ url()->current() }}/draft');
                     $submissionForm.submit();
                 });
-				
-				$('.add-calc').on('click', function(e) {
+
+                $('.add-calc').on('click', function(e) {
                     e.preventDefault();
                     var clone = $('#copy-calc').clone();
                     clone.removeClass('hide');

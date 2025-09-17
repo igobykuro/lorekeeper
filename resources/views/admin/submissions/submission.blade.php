@@ -72,8 +72,8 @@
         @endif
 
         {!! Form::open(['url' => url()->current(), 'id' => 'submissionForm']) !!}
-		
-		@if (isset($submission->data['criterion']))
+
+        @if (isset($submission->data['criterion']))
             <h2 class="mt-5">Criteria Rewards</h2>
             @foreach ($submission->data['criterion'] as $key => $criterionData)
                 <div class="card p-3 mb-2">
