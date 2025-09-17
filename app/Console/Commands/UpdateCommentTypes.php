@@ -2,6 +2,7 @@
 
 namespace App\Console\Commands;
 
+<<<<<<< HEAD
 use App\Models\Comment\Comment;
 use Illuminate\Console\Command;
 

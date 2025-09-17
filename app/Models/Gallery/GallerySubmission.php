@@ -216,7 +216,7 @@ class GallerySubmission extends Model {
             return $query->whereNull('id');
         }
 
-        return $query->where('status', 'Accepted')->whereIn('gallery_id', Gallery::where('currency_enabled', 1)->pluck('id')->toArray());
+        return $query->where('status', 'Accepted')->whereIn('gallery_id', Gallery::has('criteria')->pluck('id')->toArray());
     }
 
     /**
