@@ -271,17 +271,17 @@
                 </div>
             @endif
         </div>
-        
+
         <h3>Characters</h3>
         <p>
             Add the characters included in this piece.
-            @if($gallery->criteria)
+            @if ($gallery->criteria)
                 This helps the staff processing your submission award currency for it, so be sure to add every character.
             @endif
         </p>
         <div id="characters" class="mb-3">
-            @if($submission->id)
-                @foreach($submission->characters as $character)
+            @if ($submission->id)
+                @foreach ($submission->characters as $character)
                     @include('galleries._character_select_entry', ['character' => $character])
                 @endforeach
             @endif
@@ -289,14 +289,14 @@
         <div class="text-right mb-3">
             <a href="#" class="btn btn-outline-info" id="addCharacter">Add Character</a>
         </div>
-        
-       @if($gallery->criteria->count() > 0 && !$submission->id)
+
+        @if ($gallery->criteria->count() > 0 && !$submission->id)
             <h2 id="criterion-section" class="mt-5">Criteria Rewards <button class="btn  btn-outline-info float-right add-calc" type="button">Add Criterion</a></h2>
             <p>Criteria can be used in addition to or in replacement of rewards. They take input on what you are turning in for the prompt in order to calculate your final reward.</p>
             <p>Criteria may populate in with pre-selected minimum requirements for this prompt. </p>
             <div id="criteria"></div>
             <div class="mb-4"></div>
-        @endif 
+        @endif
 
         @if ($submission->id && Auth::user()->id != $submission->user->id && Auth::user()->hasPower('manage_submissions'))
             <div class="form-group">
@@ -308,14 +308,14 @@
         <div class="text-right">
             <a href="#" class="btn btn-primary" id="submitButton">Submit</a>
         </div>
-		
+
         {!! Form::close() !!}
-		
-		<div id="copy-calc" class="card p-3 mb-2 pl-0 hide">
-			@if(isset($criteria))
-				@include('criteria._criterion_selector', ['criteria' => $criteria])
-			@endif
-		</div>
+
+        <div id="copy-calc" class="card p-3 mb-2 pl-0 hide">
+            @if (isset($criteria))
+                @include('criteria._criterion_selector', ['criteria' => $criteria])
+            @endif
+        </div>
 
 
         @include('galleries._character_select')
@@ -460,8 +460,8 @@
                 });
 
                 $('.original.gallery-select').selectize();
-				
-				$('.add-calc').on('click', function(e) {
+
+                $('.add-calc').on('click', function(e) {
                     e.preventDefault();
                     var clone = $('#copy-calc').clone();
                     clone.removeClass('hide');

@@ -119,8 +119,8 @@
     </div>
 
     {!! Form::close() !!}
-	
-	<div id="copy-calc" class="card p-3 mb-2 pl-0 hide">
+
+    <div id="copy-calc" class="card p-3 mb-2 pl-0 hide">
         <div class="d-flex justify-content-between align-items-center mb-2">
             <a class="col-1 p-0" data-toggle="collapse" href="#collapsable-">
                 <i class="fas fa-angle-down" style="font-size: 24px"></i>
@@ -160,8 +160,8 @@
                 e.preventDefault();
                 loadModal("{{ url('admin/data/prompts/delete') }}/{{ $prompt->id }}", 'Delete Prompt');
             });
-			
-			$('.add-calc').on('click', function(e) {
+
+            $('.add-calc').on('click', function(e) {
                 e.preventDefault();
                 var clone = $('#copy-calc').clone();
                 clone.removeClass('hide');
