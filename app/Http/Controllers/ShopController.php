@@ -1,24 +1,25 @@
 <?php
 
-namespace App\Http\Controllers\Admin\Data;
+namespace App\Http\Controllers;
 
-use App\Http\Controllers\Controller;
-use App\Models\Currency\Currency;
 use App\Models\Item\Item;
-use App\Models\Pet\Pet;
+use App\Models\Item\ItemTag;
 use App\Models\Shop\Shop;
+use App\Models\Shop\ShopLog;
 use App\Models\Shop\ShopStock;
-use App\Services\ShopService;
+use App\Models\User\UserItem;
+use App\Services\LimitManager;
+use App\Services\ShopManager;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
 class ShopController extends Controller {
     /*
     |--------------------------------------------------------------------------
-    | Admin / Shop Controller
+    | Shop Controller
     |--------------------------------------------------------------------------
     |
-    | Handles creation/editing of shops and shop stock.
+    | Handles viewing the shop index, shops and purchasing from shops.
     |
     */
 
@@ -28,204 +29,170 @@ class ShopController extends Controller {
      * @return \Illuminate\Contracts\Support\Renderable
      */
     public function getIndex() {
-        return view('admin.shops.shops', [
-            'shops' => Shop::orderBy('sort', 'DESC')->get(),
+        return view('shops.index', [
+            'shops' => Shop::where('is_active', 1)->where('is_hidden', 0)->orderBy('sort', 'DESC')->get(),
         ]);
     }
 
     /**
-     * Shows the create shop page.
-     *
-     * @return \Illuminate\Contracts\Support\Renderable
-     */
-    public function getCreateShop() {
-        // get all items where they have a tag 'coupon'
-        $coupons = Item::whereHas('tags', function ($query) {
-            $query->where('tag', 'coupon')->where('is_active', 1);
-        })->orderBy('name')->pluck('name', 'id');
-
-        return view('admin.shops.create_edit_shop', [
-            'shop'    => new Shop,
-            'items'   => Item::orderBy('name')->pluck('name', 'id'),
-            'coupons' => $coupons,
-        ]);
-    }
-
-    /**
-     * Shows the edit shop page.
+     * Shows a shop.
      *
      * @param int $id
      *
      * @return \Illuminate\Contracts\Support\Renderable
      */
-    public function getEditShop($id) {
-        $shop = Shop::find($id);
+    public function getShop($id) {
+        $shop = Shop::where('id', $id)->where('is_active', 1)->first();
+
         if (!$shop) {
             abort(404);
         }
 
-        // get all items where they have a tag 'coupon'
-        $coupons = Item::released()->whereHas('tags', function ($query) {
-            $query->where('tag', 'coupon');
-        })->orderBy('name')->pluck('name', 'id');
-
-        return view('admin.shops.create_edit_shop', [
-            'shop'       => $shop,
-            'items'      => Item::orderBy('name')->pluck('name', 'id'),
-            'pets'       => Pet::orderBy('name')->pluck('name', 'id'),
-            'currencies' => Currency::orderBy('name')->pluck('name', 'id'),
-            'coupons'    => $coupons,
-        ]);
-    }
-
-    /**
-     * Creates or edits a shop.
-     *
-     * @param App\Services\ShopService $service
-     * @param int|null                 $id
-     *
-     * @return \Illuminate\Http\RedirectResponse
-     */
-    public function postCreateEditShop(Request $request, ShopService $service, $id = null) {
-        $id ? $request->validate(Shop::$updateRules) : $request->validate(Shop::$createRules);
-        $data = $request->only([
-            'name', 'description', 'image', 'remove_image', 'is_active', 'is_staff', 'use_coupons', 'is_fto', 'allowed_coupons', 'is_timed_shop', 'start_at', 'end_at',
-            'is_hidden', 'shop_days', 'shop_months',
-        ]);
-        if ($id && $service->updateShop(Shop::find($id), $data, Auth::user())) {
-            flash('Shop updated successfully.')->success();
-        } elseif (!$id && $shop = $service->createShop($data, Auth::user())) {
-            flash('Shop created successfully.')->success();
-
-            return redirect()->to('admin/data/shops/edit/'.$shop->id);
-        } else {
-            foreach ($service->errors()->getMessages()['error'] as $error) {
-                flash($error)->error();
+        if ($shop->is_staff) {
+            if (!Auth::check()) {
+                abort(404);
+            }
+            if (!Auth::user()->isStaff) {
+                abort(404);
             }
         }
 
-        return redirect()->back();
+        if (count(getLimits($shop))) {
+            if (!Auth::check()) {
+                flash('You must be logged in to enter this shop.')->error();
+
+                return redirect()->to('shops');
+            }
+
+            $limitService = new LimitManager;
+            if (!$limitService->checkLimits($shop)) {
+                flash($limitService->errors()->getMessages()['error'][0])->error();
+
+                return redirect()->to('shops');
+            }
+        }
+
+        if ($shop->is_fto) {
+            if (!Auth::check()) {
+                flash('You must be logged in to enter this shop.')->error();
+
+                return redirect()->to('/shops');
+            }
+            if (!Auth::user()->settings->is_fto && !Auth::user()->isStaff) {
+                flash('You must be a FTO to enter this shop.')->error();
+
+                return redirect()->to('/shops');
+            }
+        }
+
+        // get all types of stock in the shop
+        $stock_types = ShopStock::where('shop_id', $shop->id)->pluck('stock_type')->unique();
+        $stocks = [];
+        foreach ($stock_types as $type) {
+            // get the model for the stock type (item, pet, etc)
+            $type = strtolower($type);
+            $model = getAssetModelString($type);
+            // get the category of the stock
+            if (!class_exists($model.'Category')) {
+                $stock = $shop->displayStock($model, $type)->where('stock_type', $type)->orderBy('name')->get()->groupBy($type.'_category_id');
+                $stocks[$type] = $stock;
+                continue; // If the category model doesn't exist, skip it
+            }
+            $stock_category = ($model.'Category')::orderBy('sort', 'DESC')->get();
+            // order the stock
+            $stock = count($stock_category) ? $shop->displayStock($model, $type)->where('stock_type', $type)
+                ->orderByRaw('FIELD('.$type.'_category_id,'.implode(',', $stock_category->pluck('id')->toArray()).')')
+                ->orderBy('name')->get()->groupBy($type.'_category_id')
+            : $shop->displayStock($model, $type)->where('stock_type', $type)->orderBy('name')->get()->groupBy($type.'_category_id');
+
+            // make it so key "" appears last
+            $stock = $stock->sortBy(function ($item, $key) {
+                return $key == '' ? 1 : 0;
+            });
+
+            $stocks[$type] = $stock;
+        }
+
+        return view('shops.shop', [
+            'shop'       => $shop,
+            'stocks'     => $stocks,
+            'shops'      => Shop::where('is_active', 1)->where('is_hidden', 0)->orderBy('sort', 'DESC')->get(),
+        ]);
     }
 
     /**
-     * loads the create stock modal.
+     * Gets the shop stock modal.
      *
-     * @param mixed $id
+     * @param App\Services\ShopManager $service
+     * @param int                      $id
+     * @param int                      $stockId
+     *
+     * @return \Illuminate\Contracts\Support\Renderable
      */
-    public function getCreateShopStock($id) {
-        $shop = Shop::find($id);
+    public function getShopStock(ShopManager $service, $id, $stockId) {
+        $shop = Shop::where('id', $id)->where('is_active', 1)->first();
+        $stock = ShopStock::where('id', $stockId)->where('shop_id', $id)->first();
         if (!$shop) {
             abort(404);
         }
 
-        return view('admin.shops._stock_modal', [
-            'shop'       => $shop,
-            'currencies' => Currency::orderBy('name')->pluck('name', 'id'),
-            'stock'      => new ShopStock,
-        ]);
-    }
+        if (count(getLimits($shop))) {
+            $limitService = new LimitManager;
+            if (!$limitService->checkLimits($shop)) {
+                flash($limitService->errors()->getMessages()['error'][0])->error();
 
-    /**
-     * loads the edit stock modal.
-     *
-     * @param mixed $id
-     */
-    public function getEditShopStock($id) {
-        $stock = ShopStock::find($id);
-        if (!$stock) {
-            abort(404);
+                return redirect()->to('shops');
+            }
         }
-        // get base modal from type using asset helper
-        $type = $stock->stock_type;
-        $model = getAssetModelString(strtolower($type));
 
-        // check if categories exist for this model ($model.'Category')
-        $categoryClass = $model.'Category';
-        if (class_exists($categoryClass)) {
-            // map the categories to be name-id
-            $categories = $categoryClass::orderBy('name')->get()->mapWithKeys(function ($category) {
-                return [$category->id.'-category' => $category->name];
-            });
-            $items = [
-                $type            => $model::orderBy('name')->pluck('name', 'id')->toArray() + ['random' => 'Random '.$type],
-                $type.'Category' => $categories->toArray(),
-            ];
+        $user = Auth::user();
+        $quantityLimit = 0;
+        $userPurchaseCount = 0;
+        $purchaseLimitReached = false;
+        if ($user) {
+            $quantityLimit = $service->getStockPurchaseLimit($stock, Auth::user());
+            $userPurchaseCount = $service->checkUserPurchases($stock, Auth::user());
+            $purchaseLimitReached = $service->checkPurchaseLimitReached($stock, Auth::user());
+            $userOwned = $service->getUserOwned($stock, Auth::user());
+        }
+
+        if (Auth::check() && $shop->use_coupons) {
+            $couponId = ItemTag::where('tag', 'coupon')->where('is_active', 1); // Removed get()
+            $itemIds = $couponId->pluck('item_id'); // Could be combined with above
+            // get rid of any itemIds that are not in allowed_coupons
+            if ($shop->allowed_coupons && count($shop->allowed_coupons)) {
+                $itemIds = $itemIds->filter(function ($itemId) use ($shop) {
+                    return in_array($itemId, $shop->allowed_coupons);
+                });
+            }
+            $check = UserItem::with('item')->whereIn('item_id', $itemIds)->where('user_id', Auth::user()->id)->where('count', '>', 0)->get()->pluck('item.name', 'id');
         } else {
-            $items = $model::orderBy('name')->pluck('name', 'id')->toArray();
+            $check = null;
         }
 
-        return view('admin.shops._stock_modal', [
-            'shop'       => $stock->shop,
-            'stock'      => $stock,
-            'items'      => $items,
+        return view('shops._stock_modal', [
+            'shop'                 => $shop,
+            'stock'                => $stock,
+            'userCoupons'          => $check,
+            'quantityLimit'        => $quantityLimit,
+            'userPurchaseCount'    => $userPurchaseCount,
+            'purchaseLimitReached' => $purchaseLimitReached,
+            'userOwned'            => $user ? $userOwned : null,
+            'inventory'            => $user ? UserItem::with('item')->whereNull('deleted_at')->where('count', '>', '0')->where('user_id', Auth::user()->id)->get() : null,
         ]);
     }
 
     /**
-     * gets stock of a certain type.
-     */
-    public function getShopStockType(Request $request) {
-        $type = $request->input('type');
-        if (!$type) {
-            return null;
-        }
-        // get base modal from type using asset helper
-        $model = getAssetModelString(strtolower($type));
-
-        // check if categories exist for this model ($model.'Category')
-        $categoryClass = $model.'Category';
-        if (class_exists($categoryClass)) {
-            // map the categories to be name-id
-            $categories = $categoryClass::orderBy('name')->get()->mapWithKeys(function ($category) {
-                return [$category->id.'-category' => $category->name];
-            });
-            $items = [
-                $type            => $model::orderBy('name')->pluck('name', 'id')->toArray() + ['random' => 'Random '.$type],
-                $type.'Category' => $categories->toArray(),
-            ];
-        } else {
-            $items = $model::orderBy('name')->pluck('name', 'id')->toArray();
-        }
-
-        return view('admin.shops._stock_item', [
-            'items' => $items,
-        ]);
-    }
-
-    /**
-     * gets the type of a cost for a stock.
-     */
-    public function getShopStockCostType(Request $request) {
-        $type = $request->input('type');
-        if (!$type) {
-            return null;
-        }
-        // get base modal from type using asset helper
-        $model = getAssetModelString(strtolower($type));
-
-        return view('admin.shops._stock_cost', [
-            'costItems' => $model::orderBy('name')->pluck('name', 'id'),
-        ]);
-    }
-
-    /**
-     * Edits a shop's stock.
+     * Buys an item from a shop.
      *
-     * @param App\Services\ShopService $service
-     * @param int                      $id
+     * @param App\Services\ShopManager $service
      *
      * @return \Illuminate\Http\RedirectResponse
      */
-    public function postEditShopStock(Request $request, ShopService $service, $id) {
-        $data = $request->only([
-            'shop_id', 'item_id', 'use_user_bank', 'use_character_bank', 'is_limited_stock', 'quantity', 'purchase_limit', 'purchase_limit_timeframe', 'is_fto', 'stock_type', 'is_visible',
-            'restock', 'restock_quantity', 'restock_interval', 'range', 'disallow_transfer', 'is_timed_stock', 'stock_start_at', 'stock_end_at',
-            'cost_type', 'cost_quantity', 'cost_id', 'group', 'can_group_use_coupon', 'stock_days', 'stock_months',
-        ]);
-        if ($service->editShopStock(ShopStock::find($id), $data, Auth::user())) {
-            flash('Shop stock updated successfully.')->success();
-
-            return redirect()->back();
+    public function postBuy(Request $request, ShopManager $service) {
+        $request->validate(ShopLog::$createRules);
+        if ($service->buyStock($request->only(['stock_id', 'shop_id', 'slug', 'bank', 'quantity', 'use_coupon', 'coupon', 'cost_group', 'stack_id', 'stack_quantity']), Auth::user())) {
+            flash('Successfully purchased item.')->success();
         } else {
             foreach ($service->errors()->getMessages()['error'] as $error) {
                 flash($error)->error();
@@ -236,136 +203,14 @@ class ShopController extends Controller {
     }
 
     /**
-     * Edits a shop's stock.
-     *
-     * @param App\Services\ShopService $service
-     * @param int                      $id
-     *
-     * @return \Illuminate\Http\RedirectResponse
-     */
-    public function postCreateShopStock(Request $request, ShopService $service, $id) {
-        $data = $request->only([
-            'shop_id', 'item_id', 'currency_id', 'cost', 'use_user_bank', 'use_character_bank', 'is_limited_stock', 'quantity', 'purchase_limit', 'purchase_limit_timeframe', 'is_fto', 'stock_type', 'is_visible',
-            'restock', 'restock_quantity', 'restock_interval', 'range', 'disallow_transfer', 'is_timed_stock', 'stock_start_at', 'stock_end_at',
-            'cost_type', 'cost_quantity', 'cost_id', 'group', 'stock_days', 'stock_months',
-        ]);
-        if ($service->createShopStock(Shop::find($id), $data, Auth::user())) {
-            flash('Shop stock updated successfully.')->success();
-
-            return redirect()->back();
-        } else {
-            foreach ($service->errors()->getMessages()['error'] as $error) {
-                flash($error)->error();
-            }
-        }
-
-        return redirect()->back();
-    }
-
-    /**
-     * Gets the stock deletion modal.
-     *
-     * @param int $id
+     * Shows the user's purchase history.
      *
      * @return \Illuminate\Contracts\Support\Renderable
      */
-    public function getDeleteShopStock($id) {
-        $stock = ShopStock::find($id);
-
-        return view('admin.shops._delete_stock', [
-            'stock' => $stock,
+    public function getPurchaseHistory() {
+        return view('shops.purchase_history', [
+            'logs'  => Auth::user()->getShopLogs(0),
+            'shops' => Shop::where('is_active', 1)->orderBy('sort', 'DESC')->get(),
         ]);
-    }
-
-    /**
-     * Deletes a stock.
-     *
-     * @param App\Services\StockService $service
-     * @param int                       $id
-     *
-     * @return \Illuminate\Http\RedirectResponse
-     */
-    public function postDeleteShopStock(Request $request, ShopService $service, $id) {
-        $stock = ShopStock::find($id);
-        $shop = $stock->shop;
-        if ($id && $service->deleteStock($stock)) {
-            flash('Stock deleted successfully.')->success();
-        } else {
-            foreach ($service->errors()->getMessages()['error'] as $error) {
-                flash($error)->error();
-            }
-        }
-
-        return redirect()->to('admin/data/shops/edit/'.$shop->id);
-    }
-
-    /**
-     * Gets the shop deletion modal.
-     *
-     * @param int $id
-     *
-     * @return \Illuminate\Contracts\Support\Renderable
-     */
-    public function getDeleteShop($id) {
-        $shop = Shop::find($id);
-
-        return view('admin.shops._delete_shop', [
-            'shop' => $shop,
-        ]);
-    }
-
-    /**
-     * Deletes a shop.
-     *
-     * @param App\Services\ShopService $service
-     * @param int                      $id
-     *
-     * @return \Illuminate\Http\RedirectResponse
-     */
-    public function postDeleteShop(Request $request, ShopService $service, $id) {
-        if ($id && $service->deleteShop(Shop::find($id))) {
-            flash('Shop deleted successfully.')->success();
-        } else {
-            foreach ($service->errors()->getMessages()['error'] as $error) {
-                flash($error)->error();
-            }
-        }
-
-        return redirect()->to('admin/data/shops');
-    }
-
-    /**
-     * Sorts shops.
-     *
-     * @param App\Services\ShopService $service
-     *
-     * @return \Illuminate\Http\RedirectResponse
-     */
-    public function postSortShop(Request $request, ShopService $service) {
-        if ($service->sortShop($request->get('sort'))) {
-            flash('Shop order updated successfully.')->success();
-        } else {
-            foreach ($service->errors()->getMessages()['error'] as $error) {
-                flash($error)->error();
-            }
-        }
-
-        return redirect()->back();
-    }
-
-    public function postRestrictShop(Request $request, ShopService $service, $id) {
-        $data = $request->only([
-            'item_id', 'is_restricted',
-        ]);
-
-        if ($service->restrictShop($data, $id)) {
-            flash('Shop limits updated successfully.')->success();
-        } else {
-            foreach ($service->errors()->getMessages()['error'] as $error) {
-                flash($error)->error();
-            }
-        }
-
-        return redirect()->back();
     }
 }
