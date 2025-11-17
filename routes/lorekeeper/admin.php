@@ -214,10 +214,11 @@ Route::group(['prefix' => 'data', 'namespace' => 'Data', 'middleware' => 'power:
     Route::get('shops/create', 'ShopController@getCreateShop');
     Route::get('shops/edit/{id}', 'ShopController@getEditShop');
     Route::get('shops/delete/{id}', 'ShopController@getDeleteShop');
+    Route::post('shops/create', 'ShopController@postCreateEditShop');
     Route::post('shops/edit/{id?}', 'ShopController@postCreateEditShop');
     Route::post('shops/delete/{id}', 'ShopController@postDeleteShop');
     Route::post('shops/sort', 'ShopController@postSortShop');
-    Route::post('shops/restrictions/{id}', 'ShopController@postRestrictShop');
+
     // stock
     // create
     Route::get('shops/stock/{id}', 'ShopController@getCreateShopStock');
@@ -230,6 +231,7 @@ Route::group(['prefix' => 'data', 'namespace' => 'Data', 'middleware' => 'power:
     Route::post('shops/stock/delete/{id}', 'ShopController@postDeleteShopStock');
     // misc
     Route::get('shops/stock-type', 'ShopController@getShopStockType');
+    Route::get('shops/stock-cost-type', 'ShopController@getShopStockCostType');c
 
     // FEATURES (TRAITS)
     Route::get('trait-categories', 'FeatureController@getIndex');
