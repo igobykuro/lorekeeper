@@ -465,7 +465,6 @@ Route::group(['prefix' => 'designs', 'middleware' => 'power:manage_characters'],
 });
 Route::get('{type}/{status}', 'DesignController@getDesignIndex')->where('type', 'myo-approvals|design-approvals')->where('status', 'pending|approved|rejected');
 
-
 // LIMITS
 Route::group(['prefix' => 'limits', 'middleware' => 'power:manage_data'], function () {
     Route::post('/', 'LimitController@postCreateEditLimits');

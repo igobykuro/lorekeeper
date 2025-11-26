@@ -371,7 +371,7 @@ function takeUserAssets($assets, $sender, $recipient, $logType, $data, $selected
             }
 
             foreach ($selected as $stackData) {
-                               if (!$service->debitStack($sender, $logType, $data, $stackData['stack'], abs($stackData['quantity']))) {
+                if (!$service->debitStack($sender, $logType, $data, $stackData['stack'], abs($stackData['quantity']))) {
                     foreach ($service->errors()->getMessages()['error'] as $error) {
                         flash($error)->error();
                     }
@@ -467,6 +467,8 @@ function fillCharacterAssets($assets, $sender, $recipient, $logType, $data, $sub
  * Creates a rewards string from an asset array.
  *
  * @param array $array
+ * @param mixed $useDisplayName
+ * @param mixed $absQuantities
  *
  * @return string
  */
