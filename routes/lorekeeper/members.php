@@ -225,3 +225,10 @@ Route::group(['prefix' => 'comments', 'namespace' => 'Comments'], function () {
     Route::post('/{id}/like/{action}', 'CommentController@like')->name('comments.like');
     Route::get('/liked', 'CommentController@getLikedComments');
 });
+
+/**************************************************************************************************
+    Limits
+**************************************************************************************************/
+Route::group(['prefix' => 'limits'], function () {
+    Route::post('unlock/{id}', 'Admin\LimitController@postUnlockLimits');
+});
