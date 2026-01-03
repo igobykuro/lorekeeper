@@ -468,3 +468,29 @@ function getDisplayName($model, $id) {
 function getLimits($object) {
     return App\Models\Limit\Limit::where('object_model', get_class($object))->where('object_id', $object->id)->get();
 }
+
+/**
+ * checks if a certain object has any limits.
+ *
+ * @param mixed $object
+ */
+function hasLimits($object) {
+    return App\Models\Limit\Limit::where('object_model', get_class($object))->where('object_id', $object->id)->exists();
+}
+
+/**
+ * Checks if a user has a limit unlocked.
+ *
+ * @param mixed $object
+ * @param mixed $user
+ */
+function hasUnlockedLimits($user, $object) {
+    if (!hasLimits($object)) {
+        return true;
+    }
+
+    return App\Models\Limit\UserUnlockedLimit::where('user_id', $user->id)
+        ->where('object_model', get_class($object))
+        ->where('object_id', $object->id)
+        ->exists();
+}
