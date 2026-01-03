@@ -6,7 +6,10 @@
         $categories = \App\Models\Item\ItemCategory::visible(Auth::user() ?? null)->get();
     }
     if (!isset($item_filter)) {
-        $item_filter = \App\Models\Item\Item::orderBy('name')->released()->get()->keyBy('id');
+        $item_filter = \App\Models\Item\Item::orderBy('name')
+            ->released()
+            ->get()
+            ->keyBy('id');
     }
 @endphp
 <h3>
