@@ -1,3 +1,11 @@
+@php
+    if(isset($showRecipes) && $showRecipes){
+        $recipes = \App\Models\Recipe\Recipe::where('needs_unlocking', 1)
+            ->orderBy('name')
+            ->pluck('name', 'id');
+    }
+@endphp
+
 @extends('admin.layout')
 
 @section('admin-title')
