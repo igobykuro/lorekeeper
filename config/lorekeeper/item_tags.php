@@ -13,15 +13,21 @@ return [
     |
     */
 
-    'box' => [
-        'name' => 'Box',
-        'text_color' => '#ffffff',
-        'background_color' => '#f6993f'
+    'box'  => [
+        'name'             => 'Box',
+        'text_color'       => '#ffffff',
+        'background_color' => '#f6993f',
     ],
-    
+
     'slot' => [
-        'name' => 'Slot',
-        'text_color' => '#ffffff',
-        'background_color' => '#1fd1a7'
+        'name'             => 'Slot',
+        'text_color'       => '#ffffff',
+        'background_color' => '#1fd1a7',
+    ],
+
+    'recipe' => [
+        'name'             => 'Recipe',
+        'text_color'       => '#ffffff',
+        'background_color' => '#6D18A7',
     ],
 ];
