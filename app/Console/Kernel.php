@@ -24,16 +24,15 @@ class Kernel extends ConsoleKernel {
         $schedule->command('check-sales')
             ->everyMinute();
         $schedule->exec('rm public/images/avatars/*.tmp')
-                ->daily();
+            ->daily();
         $schedule->command('check-sales')
-                ->everyMinute();
+            ->everyMinute();
         $schedule->command('change-feature')
-                ->monthly();
+            ->monthly();
         $schedule->command('update-extension-tracker')
             ->daily();
         $schedule->command('update-staff-reward-actions')
             ->daily();
-
     }
 
     /**
