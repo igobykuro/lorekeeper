@@ -11,7 +11,6 @@ use App\Models\Item\ItemCategory;
 use App\Models\Rarity;
 use App\Models\Recipe\Recipe;
 use App\Models\Shop\Shop;
-use App\Models\Shop\ShopStock;
 use App\Models\Species\Species;
 use App\Models\Species\Subtype;
 use App\Models\User\User;
@@ -79,6 +78,11 @@ class WorldController extends Controller {
      */
     public function getSpecieses(Request $request) {
         $query = Species::query();
+
+        if (config('lorekeeper.extensions.species_trait_index.enable')) {
+            $query->withCount('features');
+        }
+
         $name = $request->get('name');
         if ($name) {
             $query->where('name', 'LIKE', '%'.$name.'%');
@@ -97,14 +101,14 @@ class WorldController extends Controller {
      * @return \Illuminate\Contracts\Support\Renderable
      */
     public function getSubtypes(Request $request) {
-        $query = Subtype::query();
+        $query = Subtype::query()->with('species');
         $name = $request->get('name');
         if ($name) {
             $query->where('name', 'LIKE', '%'.$name.'%');
         }
 
         return view('world.subtypes', [
-            'subtypes' => $query->with('species')->visible(Auth::user() ?? null)->orderBy('sort', 'DESC')->orderBy('id')->paginate(20)->appends($request->query()),
+            'subtypes' => $query->visible(Auth::user() ?? null)->orderBy('sort', 'DESC')->orderBy('id')->paginate(20)->appends($request->query()),
         ]);
     }
 
@@ -148,8 +152,10 @@ class WorldController extends Controller {
      * @return \Illuminate\Contracts\Support\Renderable
      */
     public function getFeatures(Request $request) {
-        $query = Feature::visible(Auth::user() ?? null)->with('category')->with('rarity')->with('species');
+        //$query = Feature::visible(Auth::user() ?? null)->with('category', 'rarity', 'species', 'subtype');
+        $query = Feature::visible(Auth::check() ? Auth::user() : null)->with('category')->with('rarity')->with('species');
         $data = $request->only(['rarity_id', 'feature_category_id', 'species_id', 'subtype_id', 'name', 'sort']);
+
         if (isset($data['rarity_id']) && $data['rarity_id'] != 'none') {
             $query->where('rarity_id', $data['rarity_id']);
         }
@@ -232,6 +238,8 @@ class WorldController extends Controller {
         $categories = FeatureCategory::orderBy('sort', 'DESC')->get();
         $rarities = Rarity::orderBy('sort', 'ASC')->get();
         $species = Species::visible(Auth::user() ?? null)->where('id', $id)->first();
+
+        $species = Species::visible(Auth::check() ? Auth::user() : null)->where('id', $id)->first();
         if (!$species) {
             abort(404);
         }
@@ -364,6 +372,10 @@ class WorldController extends Controller {
     public function getItems(Request $request) {
         $query = Item::with('category')->released(Auth::user() ?? null);
 
+        if (config('lorekeeper.extensions.item_entry_expansion.extra_fields')) {
+            $query->with('artist', 'shopStock')->withCount('shopStock');
+        }
+
         $categoryVisibleCheck = ItemCategory::visible(Auth::user() ?? null)->pluck('id', 'name')->toArray();
         // query where category is visible, or, no category and released
         $query->where(function ($query) use ($categoryVisibleCheck) {
@@ -422,9 +434,13 @@ class WorldController extends Controller {
      * @return \Illuminate\Contracts\Support\Renderable
      */
     public function getItem($id) {
-        $categories = ItemCategory::orderBy('sort', 'DESC')->get();
+        $item = Item::where('id', $id)->released(Auth::user() ?? null)->with('category');
 
-        $item = Item::where('id', $id)->released(Auth::user() ?? null)->first();
+        if (config('lorekeeper.extensions.item_entry_expansion.extra_fields')) {
+            $item->with('artist', 'shopStock')->withCount('shopStock');
+        }
+
+        $item = $item->first();
 
         if (!$item) {
             abort(404);
@@ -440,8 +456,6 @@ class WorldController extends Controller {
             'imageUrl'    => $item->imageUrl,
             'name'        => $item->displayName,
             'description' => $item->parsed_description,
-            'categories'  => $categories->keyBy('id'),
-            'shops'       => Shop::whereIn('id', ShopStock::where('item_id', $item->id)->pluck('shop_id')->unique()->toArray())->orderBy('sort', 'DESC')->get(),
         ]);
     }
 
@@ -451,7 +465,8 @@ class WorldController extends Controller {
      * @return \Illuminate\Contracts\Support\Renderable
      */
     public function getCharacterCategories(Request $request) {
-        $query = CharacterCategory::query();
+        $query = CharacterCategory::query()->with('sublist');
+
         $name = $request->get('name');
         if ($name) {
             $query->where('name', 'LIKE', '%'.$name.'%')->orWhere('code', 'LIKE', '%'.$name.'%');

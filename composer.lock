@@ -24,6 +24,7 @@
                 "dasprid/enum": "^1.0.3",
                 "ext-iconv": "*",
                 "php": "^8.1"
+                "php": "^8.1"
             },
             "require-dev": {
                 "phly/keep-a-changelog": "^2.12",
@@ -1814,6 +1815,7 @@
             },
             "require": {
                 "bacon/bacon-qr-code": "^3.0",
+                "bacon/bacon-qr-code": "^3.0",
                 "ext-json": "*",
                 "illuminate/console": "^10.0|^11.0|^12.0|^13.0",
                 "illuminate/support": "^10.0|^11.0|^12.0|^13.0",
@@ -1830,6 +1832,9 @@
                     "providers": [
                         "Laravel\\Fortify\\FortifyServiceProvider"
                     ]
+                },
+                "branch-alias": {
+                    "dev-master": "1.x-dev"
                 },
                 "branch-alias": {
                     "dev-master": "1.x-dev"
@@ -10066,11 +10071,13 @@
     "aliases": [],
     "minimum-stability": "stable",
     "stability-flags": {},
+    "stability-flags": {},
     "prefer-stable": true,
     "prefer-lowest": false,
     "platform": {
         "php": "^8.1"
     },
+    "platform-dev": {},
     "platform-dev": {},
     "plugin-api-version": "2.6.0"
 }

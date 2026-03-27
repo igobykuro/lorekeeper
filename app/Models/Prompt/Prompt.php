@@ -82,6 +82,13 @@ class Prompt extends Model {
         return $this->hasMany(PromptReward::class, 'prompt_id');
     }
 
+    /**
+     * Get the criteria attached to this prompt.
+     */
+    public function criteria() {
+        return $this->hasMany('App\Models\Prompt\PromptCriterion', 'prompt_id');
+    }
+
     /**********************************************************************************************
 
         SCOPES
@@ -287,6 +294,15 @@ class Prompt extends Model {
      */
     public function getUrlAttribute() {
         return url('prompts/prompts?name='.$this->name);
+    }
+
+    /**
+     * Gets the URL of the individual prompt's page, by ID.
+     *
+     * @return string
+     */
+    public function getIdUrlAttribute() {
+        return url('prompts/'.$this->id);
     }
 
     /**

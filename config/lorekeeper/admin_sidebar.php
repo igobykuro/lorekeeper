@@ -199,6 +199,10 @@ return [
                 'url'  => 'admin/data/items',
             ],
             [
+                'name' => 'Criteria Rewards',
+                'url'  => 'admin/data/criteria',
+            ],
+            [
                 'name' => 'Recipes',
                 'url'  => 'admin/data/recipes',
             ],
