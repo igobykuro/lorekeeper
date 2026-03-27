@@ -87,6 +87,8 @@ class AddSiteSettings extends Command {
 
         $this->addSiteSetting('can_transfer_items_directly', 1, 'Whether or not users can directly transfer items to other users without trading. 0: Users cannot directly transfer items. 1: Direct item transfers are allowed.');
 
+        $this->addSiteSetting('featured_character', 1, 'ID of the currently featured character.');
+
         $this->line("\nSite settings up to date!");
     }
 
