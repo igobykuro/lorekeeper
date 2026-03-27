@@ -11,7 +11,7 @@
     if ($showRaffles) {
         $raffles = \App\Models\Raffle\Raffle::where('rolled_at', null)->where('is_active', 1)->orderBy('name')->pluck('name', 'id');
     }
-    if(isset($showRecipes) && $showRecipes){
+    if (isset($showRecipes) && $showRecipes) {
         $recipes = App\Models\Recipe\Recipe::where('needs_unlocking', 1)->orderBy('name')->pluck('name', 'id');
     }
 @endphp
