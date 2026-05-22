@@ -198,29 +198,6 @@ class ShopService extends Service {
                 }
             }
 
-            $shop->stock()->create([
-                'shop_id'                  => $shop->id,
-                'item_id'                  => $data['item_id'],
-                'currency_id'              => $data['currency_id'],
-                'cost'                     => $data['cost'],
-                'use_user_bank'            => isset($data['use_user_bank']),
-                'use_character_bank'       => isset($data['use_character_bank']),
-                'is_fto'                   => isset($data['is_fto']),
-                'is_limited_stock'         => isset($data['is_limited_stock']),
-                'quantity'                 => isset($data['is_limited_stock']) ? $data['quantity'] : 0,
-                'purchase_limit'           => $data['purchase_limit'] ?? 0,
-                'purchase_limit_timeframe' => isset($data['purchase_limit']) ? $data['purchase_limit_timeframe'] : null,
-                'stock_type'               => $data['stock_type'],
-                'is_visible'               => $data['is_visible'] ?? 0,
-                'restock'                  => $data['restock'] ?? 0,
-                'restock_quantity'         => isset($data['restock']) && isset($data['quantity']) ? $data['quantity'] : 1,
-                'restock_interval'         => $data['restock_interval'] ?? 2,
-                'range'                    => $data['range'] ?? 0,
-                'is_timed_stock'           => isset($data['is_timed_stock']),
-                'start_at'                 => $data['start_at'],
-                'end_at'                   => $data['end_at'],
-            ]);
-
             return $this->commitReturn($shop);
         } catch (\Exception $e) {
             $this->setError('error', $e->getMessage());
