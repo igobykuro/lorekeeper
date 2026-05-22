@@ -212,20 +212,11 @@
             @endforeach
         </div>
     @endif
-
-    <div class="feature-row mb-2 hide">
-        {!! Form::label('item_id', 'Item', ['class' => 'col-form-label']) !!}
-        <div class="col-4">
-            {!! Form::select('item_id[]', $items, null, ['class' => 'form-control', 'placeholder' => 'Select Item']) !!}
-        </div>
-        <a href="#" class="remove-feature btn btn-danger">Remove</a>
-    </div>
 @endsection
 
 @section('scripts')
     @parent
     @include('widgets._datetimepicker_js')
-    @include('js._tinymce_wysiwyg')
     <script>
         $('.selectize').selectize();
 

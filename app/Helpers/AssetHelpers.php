@@ -89,7 +89,7 @@ function getAssetKeys($isCharacter = false) {
  */
 function getAssetModelString($type, $namespaced = true) {
     switch ($type) {
-        case 'items':
+        case 'items': case 'item':
             if ($namespaced) {
                 return '\App\Models\Item\Item';
             } else {
@@ -97,7 +97,7 @@ function getAssetModelString($type, $namespaced = true) {
             }
             break;
 
-        case 'currencies':
+        case 'currencies': case 'currency':
             if ($namespaced) {
                 return '\App\Models\Currency\Currency';
             } else {
@@ -105,7 +105,7 @@ function getAssetModelString($type, $namespaced = true) {
             }
             break;
 
-        case 'raffle_tickets':
+        case 'raffle_tickets': case 'raffle':
             if ($namespaced) {
                 return '\App\Models\Raffle\Raffle';
             } else {
@@ -113,7 +113,7 @@ function getAssetModelString($type, $namespaced = true) {
             }
             break;
 
-        case 'loot_tables':
+        case 'loot_tables': case 'loottable':
             if ($namespaced) {
                 return '\App\Models\Loot\LootTable';
             } else {
@@ -142,6 +142,14 @@ function getAssetModelString($type, $namespaced = true) {
                 return '\App\Models\Character\CharacterItem';
             } else {
                 return 'CharacterItem';
+            }
+            break;
+
+        case 'prompts': case 'prompt':
+            if ($namespaced) {
+                return '\App\Models\Prompt\Prompt';
+            } else {
+                return 'Prompt';
             }
             break;
     }
@@ -200,7 +208,10 @@ function addAsset(&$array, $asset, $quantity = 1) {
     if (isset($array[$asset->assetType][$asset->id])) {
         $array[$asset->assetType][$asset->id]['quantity'] += $quantity;
     } else {
-        $array[$asset->assetType][$asset->id] = ['asset' => $asset, 'quantity' => $quantity];
+        $array[$asset->assetType][$asset->id] = [
+            'asset'    => $asset,
+            'quantity' => $quantity,
+        ];
     }
 }
 
@@ -226,7 +237,6 @@ function removeAsset(&$array, $asset, $quantity = 1) {
 /**
  * Get a clean version of the asset array to store in the database,
  * where each asset is listed in [id => quantity] format.
- * json_encode this and store in the data attribute.
  *
  * @param array $array
  * @param bool  $isCharacter
@@ -250,7 +260,6 @@ function getDataReadyAssets($array, $isCharacter = false) {
 /**
  * Retrieves the data associated with an asset array,
  * basically reversing the above function.
- * Use the data attribute after json_decode()ing it.
  *
  * @param array $array
  *
@@ -274,14 +283,50 @@ function parseAssetData($array) {
 }
 
 /**
+ * Returns if two asset arrays are identical.
+ *
+ * @param array $first
+ * @param array $second
+ * @param mixed $isCharacter
+ * @param mixed $absQuantities
+ *
+ * @return bool
+ */
+function compareAssetArrays($first, $second, $isCharacter = false, $absQuantities = false) {
+    $keys = getAssetKeys($isCharacter);
+    foreach ($keys as $key) {
+        if (count($first[$key]) != count($second[$key])) {
+            return false;
+        }
+        foreach ($first[$key] as $id => $asset) {
+            if (!isset($second[$key][$id])) {
+                return false;
+            }
+
+            if ($absQuantities) {
+                if (abs($asset['quantity']) != abs($second[$key][$id]['quantity'])) {
+                    return false;
+                }
+            } else {
+                if ($asset['quantity'] != $second[$key][$id]['quantity']) {
+                    return false;
+                }
+            }
+        }
+    }
+
+    return true;
+}
+
+/**
  * Distributes the assets in an assets array to the given recipient (user).
  * Loot tables will be rolled before distribution.
  *
- * @param array                 $assets
- * @param \App\Models\User\User $sender
- * @param \App\Models\User\User $recipient
- * @param string                $logType
- * @param string                $data
+ * @param array                $assets
+ * @param App\Models\User\User $sender
+ * @param App\Models\User\User $recipient
+ * @param string               $logType
+ * @param string               $data
  *
  * @return array
  */
@@ -296,37 +341,57 @@ function fillUserAssets($assets, $sender, $recipient, $logType, $data) {
 
     foreach ($assets as $key => $contents) {
         if ($key == 'items' && count($contents)) {
-            $service = new \App\Services\InventoryManager;
+            $service = new App\Services\InventoryManager;
             foreach ($contents as $asset) {
                 if (!$service->creditItem($sender, $recipient, $logType, $data, $asset['asset'], $asset['quantity'])) {
+                    foreach ($service->errors()->getMessages()['error'] as $error) {
+                        flash($error)->error();
+                    }
+
                     return false;
                 }
             }
         } elseif ($key == 'currencies' && count($contents)) {
-            $service = new \App\Services\CurrencyManager;
+            $service = new App\Services\CurrencyManager;
             foreach ($contents as $asset) {
                 if (!$service->creditCurrency($sender, $recipient, $logType, $data['data'], $asset['asset'], $asset['quantity'])) {
+                    foreach ($service->errors()->getMessages()['error'] as $error) {
+                        flash($error)->error();
+                    }
+
                     return false;
                 }
             }
         } elseif ($key == 'raffle_tickets' && count($contents)) {
-            $service = new \App\Services\RaffleManager;
+            $service = new App\Services\RaffleManager;
             foreach ($contents as $asset) {
                 if (!$service->addTicket($recipient, $asset['asset'], $asset['quantity'])) {
+                    foreach ($service->errors()->getMessages()['error'] as $error) {
+                        flash($error)->error();
+                    }
+
                     return false;
                 }
             }
         } elseif ($key == 'user_items' && count($contents)) {
-            $service = new \App\Services\InventoryManager;
+            $service = new App\Services\InventoryManager;
             foreach ($contents as $asset) {
-                if (!$service->moveStack($sender, $recipient, $logType, $data, $asset['asset'])) {
+                if (!$service->moveStack($sender, $recipient, $logType, $data, $asset['asset'], $asset['quantity'])) {
+                    foreach ($service->errors()->getMessages()['error'] as $error) {
+                        flash($error)->error();
+                    }
+
                     return false;
                 }
             }
         } elseif ($key == 'characters' && count($contents)) {
-            $service = new \App\Services\CharacterManager;
+            $service = new App\Services\CharacterManager;
             foreach ($contents as $asset) {
                 if (!$service->moveCharacter($asset['asset'], $recipient, $data, $asset['quantity'], $logType)) {
+                    foreach ($service->errors()->getMessages()['error'] as $error) {
+                        flash($error)->error();
+                    }
+
                     return false;
                 }
             }
@@ -418,12 +483,12 @@ function countAssets($array) {
  * Distributes the assets in an assets array to the given recipient (character).
  * Loot tables will be rolled before distribution.
  *
- * @param array                           $assets
- * @param \App\Models\User\User           $sender
- * @param \App\Models\Character\Character $recipient
- * @param string                          $logType
- * @param string                          $data
- * @param mixed|null                      $submitter
+ * @param array                          $assets
+ * @param App\Models\User\User           $sender
+ * @param App\Models\Character\Character $recipient
+ * @param string                         $logType
+ * @param string                         $data
+ * @param mixed|null                     $submitter
  *
  * @return array
  */
@@ -444,14 +509,14 @@ function fillCharacterAssets($assets, $sender, $recipient, $logType, $data, $sub
 
     foreach ($assets as $key => $contents) {
         if ($key == 'currencies' && count($contents)) {
-            $service = new \App\Services\CurrencyManager;
+            $service = new App\Services\CurrencyManager;
             foreach ($contents as $asset) {
                 if (!$service->creditCurrency($sender, ($asset['asset']->is_character_owned ? $recipient : $item_recipient), $logType, $data['data'], $asset['asset'], $asset['quantity'])) {
                     return false;
                 }
             }
         } elseif ($key == 'items' && count($contents)) {
-            $service = new \App\Services\InventoryManager;
+            $service = new App\Services\InventoryManager;
             foreach ($contents as $asset) {
                 if (!$service->creditItem($sender, (($asset['asset']->category && $asset['asset']->category->is_character_owned) ? $recipient : $item_recipient), $logType, $data, $asset['asset'], $asset['quantity'])) {
                     return false;
