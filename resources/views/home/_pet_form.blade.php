@@ -63,12 +63,7 @@
             <p>Pets can be detached.</p>
             <div class="form-group">
                 {!! Form::label('id', 'Slug') !!} {!! add_help('Insert your character\'s slug.') !!}
-                {!! Form::select(
-                    'id',
-                    $pet->user->characters()->myo()->pluck('slug', 'id'),
-                    null,
-                    ['class' => 'form-control'],
-                ) !!}
+                {!! Form::select('id', $pet->user->characters()->myo()->pluck('slug', 'id'), null, ['class' => 'form-control']) !!}
             </div>
             <div class="text-right">
                 {!! Form::submit('Attach', ['class' => 'btn btn-primary']) !!}
@@ -84,10 +79,17 @@
     <li class="list-group-item">
         <a class="card-title h5 collapse-title" data-toggle="collapse" href="#userVariantForm">Change Pet Variant</a>
         {!! Form::open(['url' => 'pets/variant/' . $pet->id, 'id' => 'userVariantForm', 'class' => 'collapse']) !!}
+        @if (isset($pet->drops) && $pet->drops->drops_available > 0)
+            <div class="alert alert-danger">
+                This pet currently has available drops. Changing its variant may alter or remove their currently available drops.
+                <br>
+                <b>Please collect your drops before changing this pet's variant.</b>
+            </div>
+        @endif
         <p>
             This will use a splice item!
             @if ($pet->pet->isVariant)
-                <br>Current Variant: {{ $pet->pet->name }}
+                <br><b>Current Variant:</b> {{ $pet->pet->name }}
             @endif
         </p>
         <div class="form-group">
@@ -95,22 +97,32 @@
         </div>
         <div class="form-group">
             @php
-                $variants =
-                    ['0' => 'Default'] +
-                    ($pet->pet->isVariant
-                        ? $pet->pet->parent
-                            ->variants()
-                            ->pluck('name', 'id')
-                            ->toArray()
-                        : $pet->pet
-                            ->variants()
-                            ->pluck('name', 'id')
-                            ->toArray());
+                $variants = [0 => 'Default'] + ($pet->pet->isVariant ? $pet->pet->parent->variants->pluck('name', 'id')->toArray() : $pet->pet->variants->pluck('name', 'id')->toArray());
             @endphp
             {!! Form::select('variant_id', $variants, $pet->variant_id, ['class' => 'form-control']) !!}
         </div>
         <div class="text-right">
             {!! Form::submit('Change Variant', ['class' => 'btn btn-primary']) !!}
+        </div>
+        {!! Form::close() !!}
+    </li>
+@endif
+
+@if ($user && isset($evolutions) && count($evolutions) && count($pet->pet->evolutions) > 0 && $user->id == $pet->user_id)
+    <li class="list-group-item">
+        <a class="card-title h5 collapse-title" data-toggle="collapse" href="#userEvolutionForm">Change Pet Evolution</a>
+        {!! Form::open(['url' => 'pets/evolution/' . $pet->id, 'id' => 'userEvolutionForm', 'class' => 'collapse']) !!}
+        <p>
+            This will use a rare candy item to evolve your pet to the next stage, if possible.
+            @if ($pet->evolution)
+                <br>Current Evolution: {{ $pet->evolution->evolution_name }}
+            @endif
+        </p>
+        <div class="form-group">
+            {!! Form::select('stack_id', $evolutions, null, ['class' => 'form-control', 'placeholder' => 'Select Item']) !!}
+        </div>
+        <div class="text-right">
+            {!! Form::submit('Evolve Pet', ['class' => 'btn btn-primary']) !!}
         </div>
         {!! Form::close() !!}
     </li>
@@ -122,19 +134,16 @@
         <a class="card-title h5 collapse-title" data-toggle="collapse" href="#variantForm">[ADMIN] Change Pet Variant</a>
         {!! Form::open(['url' => 'pets/variant/' . $pet->id, 'id' => 'variantForm', 'class' => 'collapse']) !!}
         {!! Form::hidden('is_staff', 1) !!}
+        @if (isset($pet->drops) && $pet->drops->drops_available > 0)
+            <div class="alert alert-danger">
+                This pet currently has available drops. Changing its variant may alter or remove their currently available drops.
+                <br>
+                <b>Inform the user to collect their drops before changing this pet's variant.</b>
+            </div>
+        @endif
         <div class="form-group">
             @php
-                $variants =
-                    ['0' => 'Default'] +
-                    ($pet->pet->isVariant
-                        ? $pet->pet->parent
-                            ->variants()
-                            ->pluck('name', 'id')
-                            ->toArray()
-                        : $pet->pet
-                            ->variants()
-                            ->pluck('name', 'id')
-                            ->toArray());
+                $variants = [0 => 'Default'] + ($pet->pet->isVariant ? $pet->pet->parent->variants->pluck('name', 'id')->toArray() : $pet->pet->variants->pluck('name', 'id')->toArray());
             @endphp
             {!! Form::select('variant_id', $variants, $pet->variant_id, ['class' => 'form-control mt-2']) !!}
         </div>
@@ -151,12 +160,7 @@
         {!! Form::hidden('is_staff', 1) !!}
         <div class="form-group">
             @php
-                $evolutions =
-                    ['0' => 'Default'] +
-                    $pet->pet
-                        ->evolutions()
-                        ->pluck('evolution_name', 'id')
-                        ->toArray();
+                $evolutions = [0 => 'Default'] + $pet->pet->evolutions->pluck('evolution_name', 'id')->toArray();
             @endphp
             {!! Form::select('evolution_id', $evolutions, $pet->evolution_id, ['class' => 'form-control mt-2']) !!}
         </div>

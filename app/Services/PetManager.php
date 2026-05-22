@@ -27,8 +27,8 @@ class PetManager extends Service {
     /**
      * Grants an pet to multiple users.
      *
-     * @param array                 $data
-     * @param \App\Models\User\User $staff
+     * @param array $data
+     * @param User  $staff
      *
      * @return bool
      */
@@ -101,9 +101,9 @@ class PetManager extends Service {
     /**
      * Transfers an pet stack between users.
      *
-     * @param \App\Models\User\User    $sender
-     * @param \App\Models\User\User    $recipient
-     * @param \App\Models\User\UserPet $stack
+     * @param User    $sender
+     * @param User    $recipient
+     * @param UserPet $stack
      *
      * @return bool
      */
@@ -165,8 +165,8 @@ class PetManager extends Service {
     /**
      * Deletes an pet stack.
      *
-     * @param \App\Models\User\User    $user
-     * @param \App\Models\User\UserPet $stack
+     * @param User    $user
+     * @param UserPet $stack
      *
      * @return bool
      */
@@ -208,7 +208,7 @@ class PetManager extends Service {
     /**
      * Names a pet stack.
      *
-     * @param  \App\Models\User\UserPet
+     * @param  UserPet
      * @param mixed $pet
      * @param mixed $name
      *
@@ -459,13 +459,19 @@ class PetManager extends Service {
         DB::beginTransaction();
 
         try {
+            // find parent if id is default
+            if ($id == 0) {
+                $pet_type = Pet::find($pet->pet_id);
+                $id = $pet_type->parent == null ? null : $pet_type->parent->id;
+            }
+
+            if ($id == null) {
+                throw new \Exception('Pet is already the default variant.');
+            }
+
             if (!$isStaff || !Auth::user()->isStaff) {
                 if (!$stack_id) {
                     throw new \Exception('No item selected.');
-                }
-
-                if ($id == 0) {
-                    $id = 'default';
                 }
 
                 // check if user has item
@@ -489,11 +495,25 @@ class PetManager extends Service {
                     throw new \Exception('Could not debit item.');
                 }
             } else {
-                $this->logAdminAction($pet->user, 'Pet Variant Changed', ['pet' => $pet->id, 'variant' => $id]);
+                $this->logAdminAction($pet->user, 'Pet Variant Changed', 'Changed pet id #'.$pet->id.'/'.$pet->pet->name.' to variant '.Pet::find($id)->name);
             }
 
-            $pet->pet_id = $id == 'default' ? null : $id;
+            $pet->pet_id = $id;
             $pet->save();
+
+            // update pet drop, if relevant
+            if (isset($pet->drops)) {
+                $newPet = Pet::find($id);
+                if (isset($newPet->dropData)) {
+                    if ($pet->drops->drop_id !== $newPet->dropData->id) {
+                        $pet->drops->drop_id = $newPet->dropData->id;
+                        $pet->drops->save();
+                    }
+                } else {
+                    // the new variant does not have drops, so we discard the old drops row
+                    $pet->drops()->delete();
+                }
+            }
 
             return $this->commitReturn(true);
         } catch (\Exception $e) {
@@ -515,6 +535,10 @@ class PetManager extends Service {
         DB::beginTransaction();
 
         try {
+            if ($id == 0) {
+                $id = null;
+            }
+
             if (!$isStaff || !Auth::user()->isStaff) {
                 if (!$stack_id) {
                     throw new \Exception('No item selected.');
@@ -531,7 +555,7 @@ class PetManager extends Service {
                     throw new \Exception('Could not debit item.');
                 }
             } else {
-                $this->logAdminAction($pet->user, 'Pet Evolution Changed', ['pet' => $pet->id, 'evolution' => $id]);
+                $this->logAdminAction($pet->user, 'Pet Evolution Changed', 'Changed pet id #'.$pet->id.'/'.$pet->pet->name.' to evolution #'.$id);
             }
 
             $pet->evolution_id = $id;
@@ -616,14 +640,14 @@ class PetManager extends Service {
     /**
      * Credits an pet to a user.
      *
-     * @param \App\Models\User\User $sender
-     * @param \App\Models\User\User $recipient
-     * @param string                $type
-     * @param array                 $data
-     * @param \App\Models\Pet\Pet   $pet
-     * @param int                   $quantity
-     * @param mixed                 $variant_id
-     * @param mixed|null            $evolution_id
+     * @param User       $sender
+     * @param User       $recipient
+     * @param string     $type
+     * @param array      $data
+     * @param Pet        $pet
+     * @param int        $quantity
+     * @param mixed      $variant_id
+     * @param mixed|null $evolution_id
      *
      * @return bool
      */
@@ -667,7 +691,7 @@ class PetManager extends Service {
             }
 
             // Create drop information for the pet, if relevant
-            if ($variant ? $variant->hasDrops : $pet->hasDrops) {
+            if ($pet->hasDrops) {
                 $drop = PetDrop::create([
                     'drop_id'         => $user_pet->pet->dropData->id,
                     'user_pet_id'     => $user_pet->id,
@@ -697,11 +721,11 @@ class PetManager extends Service {
     /**
      * Moves an pet stack from one user to another.
      *
-     * @param \App\Models\User\User $sender
-     * @param \App\Models\User\User $recipient
-     * @param string                $type
-     * @param array                 $data
-     * @param mixed                 $stack
+     * @param User   $sender
+     * @param User   $recipient
+     * @param string $type
+     * @param array  $data
+     * @param mixed  $stack
      *
      * @return bool
      */
@@ -727,7 +751,7 @@ class PetManager extends Service {
     /**
      * Debits an pet from a user.
      *
-     * @param \App\Models\User\User   $user
+     * @param User                    $user
      * @param string                  $type
      * @param array                   $data
      * @param \App\Models\Pet\UserPet $stack
@@ -738,6 +762,7 @@ class PetManager extends Service {
         DB::beginTransaction();
 
         try {
+            $stack->drops()->delete();
             $stack->delete();
 
             if ($type && !$this->createLog($user ? $user->id : null, null, $stack->id, $type, $data['data'], $stack->pet_id, 1)) {

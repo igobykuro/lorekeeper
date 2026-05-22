@@ -18,9 +18,10 @@
             ->orderBy('name')
             ->pluck('name', 'id');
     }
-    $pets = \App\Models\Pet\Pet::orderBy('name')
-        ->get()
-        ->pluck('fullName', 'id');
+    $pets = App\Models\Pet\Pet::orderBy('parent_id')
+        ->with('parent')
+        ->sortBy(['parent_id', 'fullName'])
+        ->pluck('fullName', 'id')->toArray();
 @endphp
 
 <div class="text-right mb-3">
