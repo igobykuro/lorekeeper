@@ -400,7 +400,7 @@ function fillUserAssets($assets, $sender, $recipient, $logType, $data) {
                 }
             }
         } elseif ($key == 'pets' && count($contents)) {
-            $service = new \App\Services\PetManager;
+            $service = new App\Services\PetManager;
             foreach ($contents as $asset) {
                 if (!$service->creditPet($sender, $recipient, $logType, $data, $asset['asset'], $asset['quantity'])) {
                     foreach ($service->errors()->getMessages()['error'] as $error) {

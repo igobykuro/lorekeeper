@@ -32,7 +32,7 @@ class PetService extends Service {
      * @param array                 $data
      * @param \App\Models\User\User $user
      *
-     * @return \App\Models\Pet\PetCategory|bool
+     * @return bool|PetCategory
      */
     public function createPetCategory($data, $user) {
         DB::beginTransaction();
@@ -66,11 +66,11 @@ class PetService extends Service {
     /**
      * Update a category.
      *
-     * @param \App\Models\Pet\PetCategory $category
-     * @param array                       $data
-     * @param \App\Models\User\User       $user
+     * @param PetCategory           $category
+     * @param array                 $data
+     * @param \App\Models\User\User $user
      *
-     * @return \App\Models\Pet\PetCategory|bool
+     * @return bool|PetCategory
      */
     public function updatePetCategory($category, $data, $user) {
         DB::beginTransaction();
@@ -107,7 +107,7 @@ class PetService extends Service {
     /**
      * Delete a category.
      *
-     * @param \App\Models\Pet\PetCategory $category
+     * @param PetCategory $category
      *
      * @return bool
      */
@@ -171,7 +171,7 @@ class PetService extends Service {
      * @param array                 $data
      * @param \App\Models\User\User $user
      *
-     * @return \App\Models\Pet\Pet|bool
+     * @return bool|Pet
      */
     public function createPet($data, $user) {
         DB::beginTransaction();
@@ -213,11 +213,11 @@ class PetService extends Service {
     /**
      * Updates an pet.
      *
-     * @param \App\Models\Pet\Pet   $pet
+     * @param Pet                   $pet
      * @param array                 $data
      * @param \App\Models\User\User $user
      *
-     * @return \App\Models\Pet\Pet|bool
+     * @return bool|Pet
      */
     public function updatePet($pet, $data, $user) {
         DB::beginTransaction();
@@ -261,7 +261,7 @@ class PetService extends Service {
     /**
      * Deletes an pet.
      *
-     * @param \App\Models\Pet\Pet $pet
+     * @param Pet $pet
      *
      * @return bool
      */
@@ -422,7 +422,7 @@ class PetService extends Service {
      * @param array                 $data
      * @param \App\Models\User\User $user
      *
-     * @return \App\Models\Pet\PetLevel|bool
+     * @return bool|PetLevel
      */
     public function createPetLevel($data, $user) {
         DB::beginTransaction();
@@ -463,11 +463,11 @@ class PetService extends Service {
     /**
      * Updates a pet level.
      *
-     * @param \App\Models\Pet\PetLevel $level
-     * @param array                    $data
-     * @param \App\Models\User\User    $user
+     * @param PetLevel              $level
+     * @param array                 $data
+     * @param \App\Models\User\User $user
      *
-     * @return \App\Models\Pet\PetLevel|bool
+     * @return bool|PetLevel
      */
     public function updatePetLevel($level, $data, $user) {
         DB::beginTransaction();
@@ -515,7 +515,7 @@ class PetService extends Service {
     /**
      * Deletes a pet level.
      *
-     * @param \App\Models\Pet\PetLevel $level
+     * @param PetLevel $level
      *
      * @return bool
      */
@@ -541,8 +541,8 @@ class PetService extends Service {
     /**
      * Adds pets to a level.
      *
-     * @param array                    $pet_ids
-     * @param \App\Models\Pet\PetLevel $level
+     * @param array    $pet_ids
+     * @param PetLevel $level
      *
      * @return bool
      */
@@ -620,8 +620,8 @@ class PetService extends Service {
     /**
      * Handle category data.
      *
-     * @param array                            $data
-     * @param \App\Models\Pet\PetCategory|null $category
+     * @param array            $data
+     * @param PetCategory|null $category
      *
      * @return array
      */
@@ -655,8 +655,8 @@ class PetService extends Service {
     /**
      * Processes user input for creating/updating an pet.
      *
-     * @param array               $data
-     * @param \App\Models\Pet\Pet $pet
+     * @param array $data
+     * @param Pet   $pet
      *
      * @return array
      */
