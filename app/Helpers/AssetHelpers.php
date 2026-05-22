@@ -289,29 +289,15 @@ function parseAssetData($array) {
  * Distributes the assets in an assets array to the given recipient (user).
  * Loot tables will be rolled before distribution.
  *
- * @param array                 $assets
- * @param \App\Models\User\User $sender
- * @param \App\Models\User\User $recipient
- * @param string                $logType
- * @param string                $data
- * @param mixed|null            $selected
- *
- * @return array
- */
-/**
- * Distributes the assets in an assets array to the given recipient (user).
- * Loot tables will be rolled before distribution.
- *
  * @param array                $assets
  * @param App\Models\User\User $sender
  * @param App\Models\User\User $recipient
  * @param string               $logType
  * @param string               $data
- * @param mixed|null           $selected
  *
  * @return array
  */
-function fillUserAssets($assets, $sender, $recipient, $logType, $data, $selected = null) {
+function fillUserAssets($assets, $sender, $recipient, $logType, $data) {
     // Roll on any loot tables
     if (isset($assets['loot_tables'])) {
         foreach ($assets['loot_tables'] as $table) {
@@ -475,12 +461,12 @@ function countAssets($array) {
  * Distributes the assets in an assets array to the given recipient (character).
  * Loot tables will be rolled before distribution.
  *
- * @param array                           $assets
- * @param \App\Models\User\User           $sender
- * @param \App\Models\Character\Character $recipient
- * @param string                          $logType
- * @param string                          $data
- * @param mixed|null                      $submitter
+ * @param array                          $assets
+ * @param App\Models\User\User           $sender
+ * @param App\Models\Character\Character $recipient
+ * @param string                         $logType
+ * @param string                         $data
+ * @param mixed|null                     $submitter
  *
  * @return array
  */
@@ -501,14 +487,14 @@ function fillCharacterAssets($assets, $sender, $recipient, $logType, $data, $sub
 
     foreach ($assets as $key => $contents) {
         if ($key == 'currencies' && count($contents)) {
-            $service = new \App\Services\CurrencyManager;
+            $service = new App\Services\CurrencyManager;
             foreach ($contents as $asset) {
                 if (!$service->creditCurrency($sender, ($asset['asset']->is_character_owned ? $recipient : $item_recipient), $logType, $data['data'], $asset['asset'], $asset['quantity'])) {
                     return false;
                 }
             }
         } elseif ($key == 'items' && count($contents)) {
-            $service = new \App\Services\InventoryManager;
+            $service = new App\Services\InventoryManager;
             foreach ($contents as $asset) {
                 if (!$service->creditItem($sender, (($asset['asset']->category && $asset['asset']->category->is_character_owned) ? $recipient : $item_recipient), $logType, $data, $asset['asset'], $asset['quantity'])) {
                     return false;
