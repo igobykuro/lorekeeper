@@ -144,14 +144,6 @@ function getAssetModelString($type, $namespaced = true) {
                 return 'CharacterItem';
             }
             break;
-
-        case 'prompts': case 'prompt':
-            if ($namespaced) {
-                return '\App\Models\Prompt\Prompt';
-            } else {
-                return 'Prompt';
-            }
-            break;
     }
 
     return null;
