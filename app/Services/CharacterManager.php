@@ -1090,8 +1090,8 @@ class CharacterManager extends Service {
     /**
      * Sorts a character's pets.
      *
-     * @param array                 $data
-     * @param \App\Models\User\User $user
+     * @param array $data
+     * @param User  $user
      *
      * @return bool
      */
