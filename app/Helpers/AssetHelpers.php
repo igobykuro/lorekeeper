@@ -107,7 +107,7 @@ function getAssetModelString($type, $namespaced = true) {
             }
             break;
 
-        case 'raffle_tickets':
+        case 'raffle_tickets': case 'raffle':
             if ($namespaced) {
                 return '\App\Models\Raffle\Raffle';
             } else {
@@ -212,7 +212,10 @@ function addAsset(&$array, $asset, $quantity = 1) {
     if (isset($array[$asset->assetType][$asset->id])) {
         $array[$asset->assetType][$asset->id]['quantity'] += $quantity;
     } else {
-        $array[$asset->assetType][$asset->id] = ['asset' => $asset, 'quantity' => $quantity];
+        $array[$asset->assetType][$asset->id] = [
+            'asset'    => $asset,
+            'quantity' => $quantity,
+        ];
     }
 }
 
@@ -238,7 +241,6 @@ function removeAsset(&$array, $asset, $quantity = 1) {
 /**
  * Get a clean version of the asset array to store in the database,
  * where each asset is listed in [id => quantity] format.
- * json_encode this and store in the data attribute.
  *
  * @param array $array
  * @param bool  $isCharacter
@@ -262,7 +264,6 @@ function getDataReadyAssets($array, $isCharacter = false) {
 /**
  * Retrieves the data associated with an asset array,
  * basically reversing the above function.
- * Use the data attribute after json_decode()ing it.
  *
  * @param array $array
  *
@@ -283,6 +284,42 @@ function parseAssetData($array) {
     }
 
     return $assets;
+}
+
+/**
+ * Returns if two asset arrays are identical.
+ *
+ * @param array $first
+ * @param array $second
+ * @param mixed $isCharacter
+ * @param mixed $absQuantities
+ *
+ * @return bool
+ */
+function compareAssetArrays($first, $second, $isCharacter = false, $absQuantities = false) {
+    $keys = getAssetKeys($isCharacter);
+    foreach ($keys as $key) {
+        if (count($first[$key]) != count($second[$key])) {
+            return false;
+        }
+        foreach ($first[$key] as $id => $asset) {
+            if (!isset($second[$key][$id])) {
+                return false;
+            }
+
+            if ($absQuantities) {
+                if (abs($asset['quantity']) != abs($second[$key][$id]['quantity'])) {
+                    return false;
+                }
+            } else {
+                if ($asset['quantity'] != $second[$key][$id]['quantity']) {
+                    return false;
+                }
+            }
+        }
+    }
+
+    return true;
 }
 
 /**
