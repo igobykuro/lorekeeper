@@ -663,39 +663,3 @@ function parseDropAssetData($array) {
 
     return $result;
 }
-
-/**
- * Returns if two asset arrays are identical.
- *
- * @param array $first
- * @param array $second
- * @param mixed $isCharacter
- * @param mixed $absQuantities
- *
- * @return bool
- */
-function compareAssetArrays($first, $second, $isCharacter = false, $absQuantities = false) {
-    $keys = getAssetKeys($isCharacter);
-    foreach ($keys as $key) {
-        if (count($first[$key]) != count($second[$key])) {
-            return false;
-        }
-        foreach ($first[$key] as $id => $asset) {
-            if (!isset($second[$key][$id])) {
-                return false;
-            }
-
-            if ($absQuantities) {
-                if (abs($asset['quantity']) != abs($second[$key][$id]['quantity'])) {
-                    return false;
-                }
-            } else {
-                if ($asset['quantity'] != $second[$key][$id]['quantity']) {
-                    return false;
-                }
-            }
-        }
-    }
-
-    return true;
-}
