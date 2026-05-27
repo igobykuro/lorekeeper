@@ -20,6 +20,7 @@
     }
     $pets = App\Models\Pet\Pet::orderBy('parent_id')
         ->with('parent')
+        ->get()
         ->sortBy(['parent_id', 'fullName'])
         ->pluck('fullName', 'id')
         ->toArray();

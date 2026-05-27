@@ -18,9 +18,12 @@
             ->orderBy('name')
             ->pluck('name', 'id');
     }
-    $pets = \App\Models\Pet\Pet::orderBy('name')
+    $pets = App\Models\Pet\Pet::orderBy('parent_id')
+        ->with('parent')
         ->get()
-        ->pluck('fullName', 'id');
+        ->sortBy(['parent_id', 'fullName'])
+        ->pluck('fullName', 'id')
+        ->toArray();
 @endphp
 
 <div id="lootRowData" class="hide">
