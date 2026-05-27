@@ -24,7 +24,8 @@ class AddTimedShop extends Migration {
         Schema::table('shops', function (Blueprint $table) {
             $table->dropColumn('is_timed_shop');
             $table->dropColumn('start_at');
-            $table->dropColumn('start_at');
+            $table->dropColumn('end_at');
+            $table->dropTimestamps();
         });
     }
 }
