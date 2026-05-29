@@ -51,7 +51,7 @@ class CouponService extends Service {
 
             $coupon['discount'] = $data['discount'];
             $coupon['infinite'] = $data['infinite'];
-            $tag->update(['data' => $coupon]);
+            $tag->update(['data' => json_encode($coupon)]);
 
             return $this->commitReturn(true);
         } catch (\Exception $e) {
