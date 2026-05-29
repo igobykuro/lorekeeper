@@ -72,10 +72,9 @@ class SpliceService extends Service {
         DB::beginTransaction();
 
         try {
-            $tag->update(['data' => 
-                json_encode([
-                    'variant_ids' => $data['variant_ids'] ?? null,
-                ])
+            $tag->update(['data' => json_encode([
+                'variant_ids' => $data['variant_ids'] ?? null,
+            ]),
             ]);
 
             return $this->commitReturn(true);
