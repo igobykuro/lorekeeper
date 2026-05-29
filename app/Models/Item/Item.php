@@ -101,7 +101,7 @@ class Item extends Model {
      * Get shop stock for this item.
      */
     public function shopStock() {
-        return $this->hasMany(ShopStock::class, 'item_id');
+        return $this->hasMany(ShopStock::class, 'item_id')->where('stock_type', 'Item')->where('is_visible', 1);
     }
 
     /**********************************************************************************************
@@ -437,5 +437,28 @@ class Item extends Model {
      */
     public function tag($tag) {
         return $this->tags()->where('tag', $tag)->where('is_active', 1)->first();
+    }
+    
+    /**
+     * Get the shops that stock this item.
+     *
+     * @param mixed|null $user
+     *
+     * @return \Illuminate\Database\Eloquent\Collection
+     */
+    public function shops($user = null) {
+        if (!config('lorekeeper.extensions.item_entry_expansion.extra_fields') || !$this->shop_stock_count) {
+            return null;
+        }
+
+        $shops = Shop::where(function ($query) use ($user) {
+            if ($user && $user->hasPower('edit_data')) {
+                return $query;
+            }
+
+            return $query->where('is_hidden', 0)->where('is_staff', 0);
+        })->whereIn('id', $this->shopStock->pluck('shop_id')->toArray())->get();
+
+        return $shops;
     }
 }
