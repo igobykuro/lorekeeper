@@ -438,7 +438,7 @@ class Item extends Model {
     public function tag($tag) {
         return $this->tags()->where('tag', $tag)->where('is_active', 1)->first();
     }
-    
+
     /**
      * Get the shops that stock this item.
      *
