@@ -98,9 +98,11 @@ class SalesService extends Service {
 
             // The character identification comes in both the slug field and as character IDs
             // First, check if the characters are accessible to begin with.
-            if(isset($data['slug'])){
+            if (isset($data['slug'])) {
                 $characters = Character::myo(0)->visible()->whereIn('slug', $data['slug'])->get();
-                if(count($characters) != count($data['slug'])) throw new \Exception("One or more of the selected characters do not exist.");
+                if (count($characters) != count($data['slug'])) {
+                    throw new \Exception('One or more of the selected characters do not exist.');
+                }
                 $this->processCharacters($sales, $data);
                 // Remove existing attached characters, whose slug is not in the data
                 $sales->characters()->whereNotIn('character_id', $characters->pluck('id'))->delete();
@@ -161,6 +163,137 @@ class SalesService extends Service {
             }
 
             return $this->rollbackReturn(false);
+        }
+    }
+
+    /**
+     * Rolls a sale consecutively. Each user may only win once.
+     *
+     * @param mixed $sale
+     */
+    public function rollSales($sale) {
+        if (!$sale) {
+            return null;
+        }
+        DB::beginTransaction();
+
+        try {
+            foreach ($sale->characters()->whereIn('type', ['raffle', 'flaffle'])->get() as $salesCharacter) {
+                $winners = $this->rollWinners($salesCharacter);
+                // mark raffle as finished
+                $salesCharacter->is_open = 0;
+                $salesCharacter->save();
+
+                // remove any tickets from winners in raffles in the group that aren't completed
+                $saleCharacters = $sale->characters()->where('is_open', '!=', 0)->where('id', '!=', $salesCharacter->id)->get();
+                foreach ($saleCharacters as $r) {
+                    $r->tickets()->where(function ($query) use ($winners) {
+                        $query->whereIn('user_id', $winners);
+                    })->delete();
+                }
+            }
+            $sale->is_open = 0;
+            $sale->save();
+
+            return $this->commitReturn(true);
+        } catch (\Exception $e) {
+            $this->setError('error', $e->getMessage());
+        }
+
+        return $this->rollbackReturn(false);
+    }
+
+    /**
+     * Processes sales data entered for characters.
+     *
+     * @param App\Models\Sales\Sales $sales
+     * @param array                  $data
+     *
+     * @return bool
+     */
+    private function processCharacters($sales, $data) {
+        foreach ($data['slug'] as $key=>$slug) {
+            $character = Character::myo(0)->visible()->where('slug', $slug)->first();
+            $salesCharacter = $sales->characters()->where('character_id', $character->id)->first();
+
+            // Assemble data
+            $charData[$key] = [];
+            $charData[$key]['type'] = $data['sale_type'][$key];
+            switch ($charData[$key]['type']) {
+                case 'flatsale':
+                    $charData[$key]['price'] = $data['price'][$key];
+                    break;
+                case 'auction':
+                    $charData[$key]['starting_bid'] = $data['starting_bid'][$key];
+                    $charData[$key]['min_increment'] = $data['min_increment'][$key];
+                    if (isset($data['autobuy'][$key])) {
+                        $charData[$key]['autobuy'] = $data['autobuy'][$key];
+                    }
+                    if (isset($data['end_point'][$key])) {
+                        $charData[$key]['end_point'] = $data['end_point'][$key];
+                    }
+                    break;
+                case 'ota':
+                    if (isset($data['autobuy'][$key])) {
+                        $charData[$key]['autobuy'] = $data['autobuy'][$key];
+                    }
+                    if (isset($data['end_point'][$key])) {
+                        $charData[$key]['end_point'] = $data['end_point'][$key];
+                    }
+                    if (isset($data['minimum'][$key])) {
+                        $charData[$key]['minimum'] = $data['minimum'][$key];
+                    }
+                    break;
+                case 'xta':
+                    if (isset($data['autobuy'][$key])) {
+                        $charData[$key]['autobuy'] = $data['autobuy'][$key];
+                    }
+                    if (isset($data['end_point'][$key])) {
+                        $charData[$key]['end_point'] = $data['end_point'][$key];
+                    }
+                    if (isset($data['minimum'][$key])) {
+                        $charData[$key]['minimum'] = $data['minimum'][$key];
+                    }
+                    break;
+                case 'flaffle':
+                    $charData[$key]['price'] = $data['price'][$key];
+                    break;
+                case 'pwyw':
+                    if (isset($data['minimum'][$key])) {
+                        $charData[$key]['minimum'] = $data['minimum'][$key];
+                    }
+                    break;
+            }
+
+            // Validate data
+            $validator = Validator::make($charData[$key], SalesCharacter::$rules);
+            if ($validator->fails()) {
+                throw new \Exception($validator->errors()->first());
+            }
+
+            if (isset($salesCharacter)) {
+                // update existing salescharacter
+                $salesCharacter->update([
+                    'character_id' => $character->id,
+                    'sales_id'     => $sales->id,
+                    'type'         => $charData[$key]['type'],
+                    'data'         => json_encode($charData[$key]),
+                    'description'  => $data['description'][$key] ?? null,
+                    'link'         => $data['link'][$key] ?? null,
+                    'is_open'      => $data['character_is_open'][$character->slug] ?? ($data['new_entry'][$key] ? 1 : 0),
+                ]);
+            } else {
+                // create new salescharacter
+                SalesCharacter::create([
+                    'character_id' => $character->id,
+                    'sales_id'     => $sales->id,
+                    'type'         => $charData[$key]['type'],
+                    'data'         => json_encode($charData[$key]),
+                    'description'  => $data['description'][$key] ?? null,
+                    'link'         => $data['link'][$key] ?? null,
+                    'is_open'      => $data['character_is_open'][$character->slug] ?? ($data['new_entry'][$key] ? 1 : 0),
+                ]);
+            }
         }
     }
 
@@ -258,55 +391,20 @@ class SalesService extends Service {
     }
 
     /**
-     * Rolls a sale consecutively. Each user may only win once.
-     */
-    public function rollSales($sale)
-    {
-        if(!$sale) return null;
-        DB::beginTransaction();
-
-        try {
-            foreach($sale->characters()->whereIn('type', ['raffle', 'flaffle'])->get() as $salesCharacter)
-            {
-                $winners = $this->rollWinners($salesCharacter);
-                // mark raffle as finished
-                $salesCharacter->is_open = 0;
-                $salesCharacter->save();
-
-                // remove any tickets from winners in raffles in the group that aren't completed
-                $saleCharacters = $sale->characters()->where('is_open', '!=', 0)->where('id', '!=', $salesCharacter->id)->get();
-                foreach($saleCharacters as $r)
-                {
-                    $r->tickets()->where(function($query) use ($winners) { 
-                        $query->whereIn('user_id', $winners); 
-                    })->delete();
-                }
-            }
-            $sale->is_open = 0;
-            $sale->save();
-
-            return $this->commitReturn(true);
-        } catch(\Exception $e) {
-            $this->setError('error', $e->getMessage());
-        }
-        return $this->rollbackReturn(false);
-    }
-
-
-    /**
      * Rolls the winners of a raffle.
      *
-     * @param  \App\Models\Sales\Sales $raffle
+     * @param mixed $salesCharacter
+     *
      * @return array
      */
-    private function rollWinners($salesCharacter)
-    {
+    private function rollWinners($salesCharacter) {
         $ticketPool = $salesCharacter->tickets;
         $ticketCount = $ticketPool->count();
         $winners = [];
-        for ($i = 0; $i < 1; $i++)
-        {
-            if($ticketCount == 0) break;
+        for ($i = 0; $i < 1; $i++) {
+            if ($ticketCount == 0) {
+                break;
+            }
 
             $num = mt_rand(0, $ticketCount - 1);
             $winner = $ticketPool[$num];
@@ -315,7 +413,9 @@ class SalesService extends Service {
             $winner->update(['winner' => 1]);
 
             // save the winning ticket's user id
-            if(isset($winner->user_id)) $winners[] = $winner->user_id;
+            if (isset($winner->user_id)) {
+                $winners[] = $winner->user_id;
+            }
 
             // remove ticket from the ticket pool after pulled
             $ticketPool->forget($num);
@@ -324,18 +424,15 @@ class SalesService extends Service {
             $ticketCount--;
 
             // remove tickets for the same user...I'm unsure how this is going to hold up with 3000 tickets,
-            foreach($ticketPool as $key=>$ticket)
-            {
-                if(($ticket->user_id != null && $ticket->user_id == $winner->user_id)) 
-                {
+            foreach ($ticketPool as $key=>$ticket) {
+                if (($ticket->user_id != null && $ticket->user_id == $winner->user_id)) {
                     $ticketPool->forget($key);
                 }
-
             }
             $ticketPool = $ticketPool->values();
             $ticketCount = $ticketPool->count();
         }
+
         return $winners;
     }
-
 }

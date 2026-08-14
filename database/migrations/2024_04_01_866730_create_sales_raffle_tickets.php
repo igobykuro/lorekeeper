@@ -1,19 +1,14 @@
 <?php
 
-use Illuminate\Support\Facades\Schema;
-use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
+use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\Schema;
 
-class CreateSalesRaffleTickets extends Migration
-{
+class CreateSalesRaffleTickets extends Migration {
     /**
      * Run the migrations.
-     *
-     * @return void
      */
-    public function up()
-    {
-       
+    public function up() {
         Schema::create('sales_raffle_tickets', function (Blueprint $table) {
             $table->engine = 'InnoDB';
             $table->increments('id');
@@ -27,11 +22,8 @@ class CreateSalesRaffleTickets extends Migration
 
     /**
      * Reverse the migrations.
-     *
-     * @return void
      */
-    public function down()
-    {
+    public function down() {
         Schema::dropIfExists('sales_raffle_tickets');
     }
 }

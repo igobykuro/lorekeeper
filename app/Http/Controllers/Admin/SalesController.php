@@ -133,20 +133,20 @@ class SalesController extends Controller {
     /**
      * Rolls all raffles within a sales post. One user can only be chosen once.
      *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  App\Services\SalesService  $service
-     * @param  int                       $id
+     * @param App\Services\SalesService $service
+     * @param int                       $id
+     *
      * @return \Illuminate\Http\RedirectResponse
      */
-    public function postRollSales(SalesService $service, $id)
-    {
-        if($id && $service->rollSales(Sales::find($id))) {
+    public function postRollSales(SalesService $service, $id) {
+        if ($id && $service->rollSales(Sales::find($id))) {
             flash('Sale raffles rolled successfully.')->success();
+        } else {
+            foreach ($service->errors()->getMessages()['error'] as $error) {
+                flash($error)->error();
+            }
         }
-        else {
-            foreach($service->errors()->getMessages()['error'] as $error) flash($error)->error();
-        }
+
         return redirect()->to('admin/sales');
     }
-
 }

@@ -625,7 +625,7 @@ class CharacterManager extends Service {
                 }
             }
 
-            //Check that species & rarity are selected
+            // Check that species & rarity are selected
             if (!(isset($data['species_id']) && $data['species_id'])) {
                 throw new \Exception('Characters require a species.');
             }

@@ -7,14 +7,14 @@
 @section('admin-content')
     {!! breadcrumbs(['Admin Panel' => 'admin', 'Sales' => 'admin/sales', ($sales->id ? 'Edit' : 'Create') . ' Post' => $sales->id ? 'admin/sales/edit/' . $sales->id : 'admin/sales/create']) !!}
 
-<h1>{{ $sales->id ? 'Edit' : 'Create' }} Post
-    @if($sales->id)
-        <a href="#" class="btn btn-danger float-right delete-sales-button">Delete Post</a>
-        {!! Form::open(['url' => 'admin/sales/roll/'.$sales->id]) !!}
+    <h1>{{ $sales->id ? 'Edit' : 'Create' }} Post
+        @if ($sales->id)
+            <a href="#" class="btn btn-danger float-right delete-sales-button">Delete Post</a>
+            {!! Form::open(['url' => 'admin/sales/roll/' . $sales->id]) !!}
             {!! Form::submit('Roll Raffles', ['class' => 'btn btn-warning float-right h1']) !!}
-        {!! Form::close() !!}
-    @endif
-</h1>
+            {!! Form::close() !!}
+        @endif
+    </h1>
 
     {!! Form::open(['url' => $sales->id ? 'admin/sales/edit/' . $sales->id : 'admin/sales/create', 'files' => true]) !!}
 
@@ -103,10 +103,10 @@
             });
 
 
-    $( ".datepicker" ).datetimepicker({
-        dateFormat: "yy-mm-dd",
-        timeFormat: 'HH:mm:ss',
-    });
-});
-</script>
+            $(".datepicker").datetimepicker({
+                dateFormat: "yy-mm-dd",
+                timeFormat: 'HH:mm:ss',
+            });
+        });
+    </script>
 @endsection

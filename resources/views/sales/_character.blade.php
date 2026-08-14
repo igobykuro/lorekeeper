@@ -91,24 +91,24 @@
                     </h6>
                     <p>{!! $character->description !!}</p>
 
-                    @if($character->isRaffle())
+                    @if ($character->isRaffle())
                         <hr>
                         <i><a href="/sales/tickets/{{ $character->id }}">View Tickets</a></i>
                     @endif
 
-                    @if($character->isRaffle() && Auth::user() && $character->is_open && $character->sales->is_open)
-                        @if($character->tickets()->where('user_id', Auth::user()->id)->count() <= 0)
-                        {!! Form::open(['url' => 'sales/tickets/'. $character->id .'/add', 'class' => 'text-center']) !!}
-                            {!! Form::submit('Enter '. $character->displayType, ['class' => 'btn btn-secondary btn-sm']) !!}
-                        {!! Form::close() !!}
+                    @if ($character->isRaffle() && Auth::user() && $character->is_open && $character->sales->is_open)
+                        @if ($character->tickets()->where('user_id', Auth::user()->id)->count() <= 0)
+                            {!! Form::open(['url' => 'sales/tickets/' . $character->id . '/add', 'class' => 'text-center']) !!}
+                            {!! Form::submit('Enter ' . $character->displayType, ['class' => 'btn btn-secondary btn-sm']) !!}
+                            {!! Form::close() !!}
                         @else
-                        {!! Form::open(['url' => 'sales/tickets/'. $character->id .'/delete', 'class' => 'text-center']) !!}
-                            {!! Form::submit('Withdraw from '. $character->displayType, ['class' => 'btn btn-secondary btn-sm']) !!}
-                        {!! Form::close() !!}
+                            {!! Form::open(['url' => 'sales/tickets/' . $character->id . '/delete', 'class' => 'text-center']) !!}
+                            {!! Form::submit('Withdraw from ' . $character->displayType, ['class' => 'btn btn-secondary btn-sm']) !!}
+                            {!! Form::close() !!}
                         @endif
                     @endif
 
-                    @if($character->isRaffle() && !Auth::user() && $character->is_open && $sales->is_open)
+                    @if ($character->isRaffle() && !Auth::user() && $character->is_open && $sales->is_open)
                         <br><i>You must be logged in to enter the raffle!</i>
                     @endif
 
