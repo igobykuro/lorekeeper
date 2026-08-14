@@ -67,6 +67,14 @@ class SalesCharacter extends Model {
         return $this->belongsTo(CharacterImage::class, 'image_id');
     }
 
+    /**
+     * Get the raffle tickets attached to this raffle.
+     */
+    public function tickets()
+    {
+        return $this->hasMany('App\Models\Sales\SaleRaffleTicket', 'sale_character_id');
+    }
+
     /**********************************************************************************************
 
         ACCESSORS
@@ -191,4 +199,9 @@ class SalesCharacter extends Model {
         // likely because of the function name override
         return $this->image()->first() ?? CharacterImage::where('is_visible', 1)->where('character_id', $this->character_id)->orderBy('created_at')->first();
     }
+
+    public function isRaffle(){
+        return in_array($this->type, ['flaffle', 'raffle']);
+    }
+
 }

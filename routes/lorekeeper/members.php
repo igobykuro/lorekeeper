@@ -250,3 +250,14 @@ Route::group(['prefix' => 'criteria'], function () {
 
     Route::get('guide/{id}', 'CriterionController@getCriterionGuide');
 });
+
+/**************************************************************************************************
+    Sales
+**************************************************************************************************/
+# PROFILES
+Route::group(['prefix' => 'sales'], function() {
+
+    Route::post('/tickets/{id}/add', 'SalesController@postEnterSaleRaffle');
+    Route::post('/tickets/{id}/delete', 'SalesController@postRetractSaleRaffle');
+
+});
