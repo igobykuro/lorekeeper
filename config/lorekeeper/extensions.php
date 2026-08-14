@@ -20,7 +20,7 @@ return [
     */
 
     // Navbar News Notif - Juni
-    'navbar_news_notif' => 0,
+    'navbar_news_notif' => 1,
 
     /*  Visual Trait Indexes
      *
@@ -30,10 +30,10 @@ return [
      *  Trait Modals addition - Moif
      */
     'visual_trait_index'                  => [
-        'enable_species_index'   => 0, // Enables the Species Trait Index
-        'enable_subtype_index'   => 0, // Enables the Subtype Trait Index
+        'enable_species_index'   => 1, // Enables the Species Trait Index
+        'enable_subtype_index'   => 1, // Enables the Subtype Trait Index
         'enable_universal_index' => 0, // Enables the Universal Trait Index
-        'trait_modals'           => 0, // Enables modals when you click on a trait for more info instead of linking to the traits page
+        'trait_modals'           => 1, // Enables modals when you click on a trait for more info instead of linking to the traits page
     ],
 
     // Character Status Badges - Juni
@@ -48,16 +48,16 @@ return [
     // Item Entry Expansion - Mercury
     'item_entry_expansion' => [
         'extra_fields'    => 0,
-        'resale_function' => 0,
+        'resale_function' => 1,
         'loot_tables'     => [
             // Adds the ability to use either rarity criteria for items or item categories with rarity criteria in loot tables. Note that disabling this does not apply retroactively.
-            'enable'              => 0,
-            'alternate_filtering' => 0, // By default this uses more broadly compatible methods to filter by rarity. If you are on Dreamhost/know your DB software can handle searching in JSON, it's recommended to set this to 1 instead.
+            'enable'              => 1,
+            'alternate_filtering' => 1, // By default this uses more broadly compatible methods to filter by rarity. If you are on Dreamhost/know your DB software can handle searching in JSON, it's recommended to set this to 1 instead.
         ],
     ],
 
     // Group Traits By Category - Uri
-    'traits_by_category' => 0,
+    'traits_by_category' => 1,
 
     // Scroll To Top - Uri
     'scroll_to_top' => 0, // 1 - On, 0 - off
@@ -78,7 +78,7 @@ return [
 
     // Staff Rewards - Mercury
     'staff_rewards' => [
-        'enabled'     => 0,
+        'enabled'     => 1,
         'currency_id' => 1,
     ],
 
@@ -97,12 +97,12 @@ return [
 
     // Show All Recent Submissions - Speedy
     'show_all_recent_submissions' => [
-        'enable' => 0,
+        'enable' => 1,
         'links'  => [
             'sidebar'      => 1,      // By default, ON, and will display in the sidebar.
             'indexbutton'  => 1, // By default, ON, and will display a button on the index.
         ],
-        'section_on_front' => 0, // By default, does not display on the front page. Enable to add a block above the footer.
+        'section_on_front' => 1, // By default, does not display on the front page. Enable to add a block above the footer.
     ],
 
     // collapsible admin sidebar - Newt
@@ -117,7 +117,7 @@ return [
 
     // Show Small Badges on the User's Characters/MYO Slots Page
     // Indicating Trading Status (and Gift Art & Gift Writing Status)
-    'badges_on_user_character_page' => 0,
+    'badges_on_user_character_page' => 1,
 
     // Allow users to return a pending design update to drafts, for instance if they make a mistake. - Uri
     'design_return_to_draft' => 1,

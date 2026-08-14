@@ -11,6 +11,7 @@ toolbar: 'undo redo | formatselect | bold italic backcolor | alignleft aligncent
 content_css: [
 '//www.tiny.cloud/css/codepen.min.css',
 '{{ asset('css/app.css') }}',
-'{{ asset('css/lorekeeper.css') }}'
+'{{ asset('css/lorekeeper.css') }}',
+'{{ asset('css/custom.css') }}'
 ]
 });
