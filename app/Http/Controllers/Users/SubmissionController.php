@@ -120,8 +120,8 @@ class SubmissionController extends Controller {
             'inventory'                  => $inventory,
             'page'                       => 'submission',
             'expanded_rewards'           => config('lorekeeper.extensions.character_reward_expansion.expanded'),
-            'criteria'               	=> $prompt ? Criterion::active()->whereIn('id', $promptCriteria)->orderBy('name')->pluck('name', 'id') : null,
-            'userGallerySubmissions' => $gallerySubmissions,
+            'criteria'               	   => $prompt ? Criterion::active()->whereIn('id', $promptCriteria)->orderBy('name')->pluck('name', 'id') : null,
+            'userGallerySubmissions'     => $gallerySubmissions,
         ]));
     }
 
@@ -166,8 +166,8 @@ class SubmissionController extends Controller {
             'expanded_rewards'          => config('lorekeeper.extensions.character_reward_expansion.expanded'),
             'selectedInventory'         => isset($submission->data['user']) ? parseAssetData($submission->data['user']) : null,
             'count'                     => Submission::where('prompt_id', $submission->prompt_id)->where('status', 'Approved')->where('user_id', $submission->user_id)->count(),
-            'criteria'               => Criterion::active()->whereIn('id', $promptCriteria)->orderBy('name')->pluck('name', 'id'),
-            'userGallerySubmissions' => $gallerySubmissions,
+            'criteria'                  => Criterion::active()->whereIn('id', $promptCriteria)->orderBy('name')->pluck('name', 'id'),
+            'userGallerySubmissions'    => $gallerySubmissions,
         ]));
     }
 

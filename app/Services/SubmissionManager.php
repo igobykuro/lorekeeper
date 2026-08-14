@@ -515,8 +515,8 @@ class SubmissionManager extends Service {
                 'data'                  => json_encode([
                     'user'                    => $addonData,
                     'rewards'                 => getDataReadyAssets($rewards),
-                    'criterion' => $data['criterion'] ?? null,
-                    'gallery_submission_id' => $submission->data['gallery_submission_id'] ?? null,
+                    'criterion'               => $data['criterion'] ?? null,
+                    'gallery_submission_id'   => $submission->data['gallery_submission_id'] ?? null,
                 ]), // list of rewards
             ]);
 

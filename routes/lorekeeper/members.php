@@ -254,10 +254,8 @@ Route::group(['prefix' => 'criteria'], function () {
 /**************************************************************************************************
     Sales
 **************************************************************************************************/
-# PROFILES
-Route::group(['prefix' => 'sales'], function() {
-
+// PROFILES
+Route::group(['prefix' => 'sales'], function () {
     Route::post('/tickets/{id}/add', 'SalesController@postEnterSaleRaffle');
     Route::post('/tickets/{id}/delete', 'SalesController@postRetractSaleRaffle');
-
 });

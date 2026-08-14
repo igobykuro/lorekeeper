@@ -70,8 +70,7 @@ class SalesCharacter extends Model {
     /**
      * Get the raffle tickets attached to this raffle.
      */
-    public function tickets()
-    {
+    public function tickets() {
         return $this->hasMany('App\Models\Sales\SaleRaffleTicket', 'sale_character_id');
     }
 
@@ -200,8 +199,7 @@ class SalesCharacter extends Model {
         return $this->image()->first() ?? CharacterImage::where('is_visible', 1)->where('character_id', $this->character_id)->orderBy('created_at')->first();
     }
 
-    public function isRaffle(){
+    public function isRaffle() {
         return in_array($this->type, ['flaffle', 'raffle']);
     }
-
 }
