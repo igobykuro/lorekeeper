@@ -11,8 +11,7 @@ use App\Http\Controllers\Controller;
 use App\Services\SalesManager;
 use App\Models\Sales\Sales;
 use App\Models\Sales\SalesCharacter;
-use App\Services\SalesManager;
-use Auth;
+
 use Exception;
 //use Request; 
 
