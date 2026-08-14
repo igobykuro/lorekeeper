@@ -298,6 +298,7 @@ main > .row {
 
 .mce-content-body {
     padding: 20px;
+    color: rgb(220, 206, 235) !important;
 }
 
 .ui-datepicker-inline {
