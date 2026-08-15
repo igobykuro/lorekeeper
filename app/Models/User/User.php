@@ -2,6 +2,7 @@
 
 namespace App\Models\User;
 
+use App\Models\Adoption\AdoptionLog;
 use App\Models\Award\AwardLog;
 use App\Models\Character\Character;
 use App\Models\Character\CharacterBookmark;
@@ -20,8 +21,6 @@ use App\Models\Pet\PetLog;
 use App\Models\Rank\Rank;
 use App\Models\Recipe\Recipe;
 use App\Models\Shop\ShopLog;
-use App\Models\Adoption\AdoptionLog;
-use App\Models\User\UserCharacterLog;
 use App\Models\Submission\Submission;
 use App\Traits\Commenter;
 use Carbon\Carbon;
@@ -691,13 +690,15 @@ class User extends Authenticatable implements MustVerifyEmail {
      *
      * @return \Illuminate\Pagination\LengthAwarePaginator|\Illuminate\Support\Collection
      */
-    public function getAdoptionLogs($limit = 10){
+    public function getAdoptionLogs($limit = 10) {
         $user = $this;
         $query = AdoptionLog::where('user_id', $this->id)->with('character')->with('adoption')->with('adopt')->with('currency')->orderBy('id', 'DESC');
-        if($limit) return $query->take($limit)->get();
-        else return $query->paginate(30);
+        if ($limit) {
+            return $query->take($limit)->get();
+        } else {
+            return $query->paginate(30);
+        }
     }
-    
 
     /**
      * Get the user's character ownership logs.

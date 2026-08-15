@@ -9,6 +9,7 @@ use App\Models\Award\AwardCategory;
 use App\Models\Character\Character;
 use App\Models\Character\CharacterAward;
 use App\Models\Character\CharacterCurrency;
+use App\Models\Character\CharacterImage;
 use App\Models\Character\CharacterItem;
 use App\Models\Character\CharacterProfile;
 use App\Models\Character\CharacterTransfer;
@@ -29,7 +30,6 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\View;
 use Route;
-use App\Models\Character\CharacterImage;
 
 class CharacterController extends Controller {
     /*
@@ -661,6 +661,53 @@ class CharacterController extends Controller {
     }
 
     /**
+     * Shows a character's images.
+     *
+     * @param string $slug
+     * @param mixed  $id
+     *
+     * @return \Illuminate\Contracts\Support\Renderable
+     */
+    public function getCharacterImage($slug, $id) {
+        $image = CharacterImage::where('character_id', $this->character->id)->where('id', $id)->first();
+
+        return view('character.image', [
+            'user'      => Auth::check() ? Auth::user() : null,
+            'character' => $this->character,
+            'image'     => $image,
+            'ajax'      => true,
+        ]);
+    }
+
+    /**
+     * Opens a new design update approval request for a character. but with a specific image lmao.
+     *
+     * @param App\Services\DesignUpdateManager $service
+     * @param string                           $slug
+     * @param mixed                            $id
+     *
+     * @return \Illuminate\Http\RedirectResponse
+     */
+    public function postCharacterApprovalSpecificImage($slug, DesignUpdateManager $service, $id) {
+        if (!Auth::check() || $this->character->user_id != Auth::user()->id) {
+            abort(404);
+        }
+        $image = CharacterImage::where('character_id', $this->character->id)->where('id', $id)->first();
+
+        if ($request = $service->createDesignUpdateRequest($this->character, Auth::user(), $image, true)) {
+            flash('Successfully created new design update request draft.')->success();
+
+            return redirect()->to($request->url);
+        } else {
+            foreach ($service->errors()->getMessages()['error'] as $error) {
+                flash($error)->error();
+            }
+        }
+
+        return redirect()->back();
+    }
+
+    /**
      * Transfers inventory awards back to a user.
      *
      * @param App\Services\InventoryManager $service
@@ -756,47 +803,6 @@ class CharacterController extends Controller {
             }
         }
 
-        return redirect()->back();
-    }
-
-    /**
-     * Shows a character's images.
-     *
-     * @param string $slug
-     * @param mixed  $id
-     *
-     * @return \Illuminate\Contracts\Support\Renderable
-     */
-    public function getCharacterImage($slug, $id) {
-        $image = CharacterImage::where('character_id', $this->character->id)->where('id', $id)->first();
-
-        return view('character.image', [
-            'user'      => Auth::check() ? Auth::user() : null,
-            'character' => $this->character,
-            'image'     => $image,
-            'ajax'      => true,
-        ]);
-    }
-
-    /**
-     * Opens a new design update approval request for a character. but with a specific image lmao
-     *
-     * @param  App\Services\DesignUpdateManager  $service
-     * @param  string                         $slug
-     * @return \Illuminate\Http\RedirectResponse
-     */
-    public function postCharacterApprovalSpecificImage($slug, DesignUpdateManager $service, $id)
-    {
-        if(!Auth::check() || $this->character->user_id != Auth::user()->id) abort(404);
-        $image = CharacterImage::where('character_id', $this->character->id)->where('id', $id)->first();
-
-        if($request = $service->createDesignUpdateRequest($this->character, Auth::user(), $image, true)) {
-            flash('Successfully created new design update request draft.')->success();
-            return redirect()->to($request->url);
-        }
-        else {
-            foreach($service->errors()->getMessages()['error'] as $error) flash($error)->error();
-        }
         return redirect()->back();
     }
 }

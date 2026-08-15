@@ -101,7 +101,7 @@ return [
             ],
             [
                 'name' => 'Surrenders',
-                'url' => 'admin/surrenders/pending'
+                'url'  => 'admin/surrenders/pending',
             ],
         ],
     ],
@@ -208,15 +208,15 @@ return [
             ],
             [
                 'name' => 'Adoption Center',
-                'url' => 'admin/data/adoptions/edit/1'
+                'url'  => 'admin/data/adoptions/edit/1',
             ],
             [
                 'name' => 'Adopts',
-                'url' => 'admin/data/stock'
+                'url'  => 'admin/data/stock',
             ],
             [
                 'name' => 'Prompt Categories',
-                'url' => 'admin/data/prompt-categories'
+                'url'  => 'admin/data/prompt-categories',
             ],
             [
                 'name' => 'Currencies',

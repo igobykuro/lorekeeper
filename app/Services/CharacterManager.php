@@ -12,6 +12,7 @@ use App\Models\Character\CharacterDesignUpdate;
 use App\Models\Character\CharacterFeature;
 use App\Models\Character\CharacterImage;
 use App\Models\Character\CharacterTransfer;
+use App\Models\Rarity;
 use App\Models\Sales\SalesCharacter;
 use App\Models\Species\Subtype;
 use App\Models\User\User;
@@ -21,8 +22,6 @@ use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\DB;
 use Intervention\Image\Facades\Image;
-use App\Models\Character\CharacterTransformation as Transformation;
-use App\Models\Rarity;
 
 class CharacterManager extends Service {
     /*
@@ -1973,7 +1972,7 @@ class CharacterManager extends Service {
             }
             $imageData = Arr::only($data, [
                 'species_id', 'subtype_id', 'rarity_id', 'use_cropper',
-                'x0', 'x1', 'y0', 'y1', 'transformation_id','transformation_info','transformation_description'
+                'x0', 'x1', 'y0', 'y1', 'transformation_id', 'transformation_info', 'transformation_description',
             ]);
             $imageData['use_cropper'] = isset($data['use_cropper']);
             $imageData['description'] = $data['image_description'] ?? null;
