@@ -17,6 +17,7 @@ use App\Models\Item\Item;
 use App\Models\Currency\Currency;
 use App\Models\Loot\LootTable;
 use App\Models\Raffle\Raffle;
+use App\Models\Pet\Pet;
 use Carbon\Carbon;
 
 class DailyManager extends Service
@@ -211,13 +212,9 @@ class DailyManager extends Service
                     case 'Raffle':
                         $reward = Raffle::find($data['rewardable_id'][$key]);
                         break;
-                        //uncomment if you use pets or awards, may still have to fix/add in other places
-                        /**case 'Pet':
+                    case 'Pet':
                         $reward = Pet::find($data['rewardable_id'][$key]);
                         break;
-                    case 'Award':
-                        $reward = Award::find($data['rewardable_id'][$key]);
-                        break;**/
                 }
                 if (!$reward) continue;
                 addAsset($assets, $reward, $data['quantity'][$key]);
