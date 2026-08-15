@@ -61,8 +61,8 @@ class AddAwardsCategoriesLogsTables extends Migration {
         });
 
         // Now to create character specific awards, based on the character items extension
-        ///////////////////////
-        /////////
+        // /////////////////////
+        // ///////
 
         Schema::create('character_awards', function (Blueprint $table) {
             $table->engine = 'InnoDB';

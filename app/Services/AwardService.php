@@ -30,7 +30,7 @@ class AwardService extends Service {
      * @param array                 $data
      * @param \App\Models\User\User $user
      *
-     * @return \App\Models\Award\AwardCategory|bool
+     * @return AwardCategory|bool
      */
     public function createAwardCategory($data, $user) {
         DB::beginTransaction();
@@ -66,11 +66,11 @@ class AwardService extends Service {
     /**
      * Update a category.
      *
-     * @param \App\Models\Award\AwardCategory $category
-     * @param array                           $data
-     * @param \App\Models\User\User           $user
+     * @param AwardCategory         $category
+     * @param array                 $data
+     * @param \App\Models\User\User $user
      *
-     * @return \App\Models\Award\AwardCategory|bool
+     * @return AwardCategory|bool
      */
     public function updateAwardCategory($category, $data, $user) {
         DB::beginTransaction();
@@ -109,7 +109,7 @@ class AwardService extends Service {
     /**
      * Delete a category.
      *
-     * @param \App\Models\Award\AwardCategory $category
+     * @param AwardCategory $category
      *
      * @return bool
      */
@@ -173,7 +173,7 @@ class AwardService extends Service {
      * @param array                 $data
      * @param \App\Models\User\User $user
      *
-     * @return \App\Models\Award\Award|bool
+     * @return Award|bool
      */
     public function createAward($data, $user) {
         DB::beginTransaction();
@@ -237,11 +237,11 @@ class AwardService extends Service {
     /**
      * Updates an award.
      *
-     * @param \App\Models\Award\Award $award
-     * @param array                   $data
-     * @param \App\Models\User\User   $user
+     * @param Award                 $award
+     * @param array                 $data
+     * @param \App\Models\User\User $user
      *
-     * @return \App\Models\Award\Award|bool
+     * @return Award|bool
      */
     public function updateAward($award, $data, $user) {
         DB::beginTransaction();
@@ -317,7 +317,7 @@ class AwardService extends Service {
     /**
      * Deletes an award.
      *
-     * @param \App\Models\Award\Award $award
+     * @param Award $award
      *
      * @return bool
      */
@@ -358,8 +358,8 @@ class AwardService extends Service {
     /**
      * Handle category data.
      *
-     * @param array                                $data
-     * @param \App\Models\Award\AwardCategory|null $category
+     * @param array              $data
+     * @param AwardCategory|null $category
      *
      * @return array
      */
@@ -382,8 +382,8 @@ class AwardService extends Service {
     /**
      * Processes user input for creating/updating an award.
      *
-     * @param array                   $data
-     * @param \App\Models\Award\Award $award
+     * @param array $data
+     * @param Award $award
      *
      * @return array
      */

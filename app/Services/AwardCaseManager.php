@@ -31,8 +31,8 @@ class AwardCaseManager extends Service {
     /**
      * Grants an award to multiple users.
      *
-     * @param array                 $data
-     * @param \App\Models\User\User $staff
+     * @param array $data
+     * @param User  $staff
      *
      * @return bool
      */
@@ -115,9 +115,9 @@ class AwardCaseManager extends Service {
     /**
      * Grants an award to a character.
      *
-     * @param array                           $data
-     * @param \App\Models\Character\Character $character
-     * @param \App\Models\User\User           $staff
+     * @param array     $data
+     * @param Character $character
+     * @param User      $staff
      *
      * @return bool
      */
@@ -178,10 +178,10 @@ class AwardCaseManager extends Service {
     /**
      * Transfers awards between a user and character.
      *
-     * @param \App\Models\Character\Character|\App\Models\User\User           $sender
-     * @param \App\Models\Character\Character|\App\Models\User\User           $recipient
-     * @param \App\Models\Character\CharacterAward|\App\Models\User\UserAward $stacks
-     * @param int                                                             $quantities
+     * @param Character|User           $sender
+     * @param Character|User           $recipient
+     * @param CharacterAward|UserAward $stacks
+     * @param int                      $quantities
      *
      * @return bool
      */
@@ -232,7 +232,7 @@ class AwardCaseManager extends Service {
                     throw new \Exception('Quantity to transfer exceeds '.__('awards.award').' count.');
                 }
 
-                //Check that hold count isn't being exceeded
+                // Check that hold count isn't being exceeded
                 if ($stack->award->character_limit > 0) {
                     $limit = $stack->award->character_limit;
                 }
@@ -262,10 +262,10 @@ class AwardCaseManager extends Service {
     /**
      * Transfers awards between user stacks.
      *
-     * @param \App\Models\User\User      $sender
-     * @param \App\Models\User\User      $recipient
-     * @param \App\Models\User\UserAward $stacks
-     * @param int                        $quantities
+     * @param User      $sender
+     * @param User      $recipient
+     * @param UserAward $stacks
+     * @param int       $quantities
      *
      * @return bool
      */
@@ -345,9 +345,9 @@ class AwardCaseManager extends Service {
     /**
      * Deletes awards from stack.
      *
-     * @param \App\Models\Character\Character|\App\Models\User\User           $owner
-     * @param \App\Models\Character\CharacterAward|\App\Models\User\UserAward $stacks
-     * @param int                                                             $quantities
+     * @param Character|User           $owner
+     * @param CharacterAward|UserAward $stacks
+     * @param int                      $quantities
      *
      * @return bool
      */
@@ -428,12 +428,12 @@ class AwardCaseManager extends Service {
     /**
      * Credits an award to a user or character.
      *
-     * @param \App\Models\Character\Character|\App\Models\User\User $sender
-     * @param \App\Models\Character\Character|\App\Models\User\User $recipient
-     * @param string                                                $type
-     * @param array                                                 $data
-     * @param \App\Models\Award\Award                               $award
-     * @param int                                                   $quantity
+     * @param Character|User $sender
+     * @param Character|User $recipient
+     * @param string         $type
+     * @param array          $data
+     * @param Award          $award
+     * @param int            $quantity
      *
      * @return bool
      */
@@ -483,12 +483,12 @@ class AwardCaseManager extends Service {
     /**
      * Moves awards from one user or character stack to another.
      *
-     * @param \App\Models\Character\Character|\App\Models\User\User $sender
-     * @param \App\Models\Character\Character|\App\Models\User\User $recipient
-     * @param string                                                $type
-     * @param array                                                 $data
-     * @param mixed                                                 $stack
-     * @param mixed                                                 $quantity
+     * @param Character|User $sender
+     * @param Character|User $recipient
+     * @param string         $type
+     * @param array          $data
+     * @param mixed          $stack
+     * @param mixed          $quantity
      *
      * @return bool
      */
@@ -526,11 +526,11 @@ class AwardCaseManager extends Service {
     /**
      * Debits an award from a user or character.
      *
-     * @param \App\Models\Character\Character|\App\Models\User\User $owner
-     * @param string                                                $type
-     * @param array                                                 $data
-     * @param \App\Models\Award\UserAward                           $stack
-     * @param mixed                                                 $quantity
+     * @param Character|User              $owner
+     * @param string                      $type
+     * @param array                       $data
+     * @param \App\Models\Award\UserAward $stack
+     * @param mixed                       $quantity
      *
      * @return bool
      */

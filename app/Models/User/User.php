@@ -18,7 +18,6 @@ use App\Models\Notification;
 use App\Models\Pet\Pet;
 use App\Models\Pet\PetLog;
 use App\Models\Rank\Rank;
-use App\Models\Rank\RankPower;
 use App\Models\Recipe\Recipe;
 use App\Models\Shop\ShopLog;
 use App\Models\Submission\Submission;
