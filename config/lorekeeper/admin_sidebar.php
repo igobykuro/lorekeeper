@@ -219,18 +219,6 @@ return [
                 'url' => 'admin/data/prompt-categories'
             ],
             [
-                'name' => 'Adoption Center',
-                'url' => 'admin/data/adoptions/edit/1'
-            ],
-            [
-                'name' => 'Adopts',
-                'url' => 'admin/data/stock'
-            ],
-            [
-                'name' => 'Prompt Categories',
-                'url' => 'admin/data/prompt-categories'
-            ],
-            [
                 'name' => 'Currencies',
                 'url'  => 'admin/data/currencies',
             ],

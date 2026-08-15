@@ -246,7 +246,7 @@ Route::group(['prefix' => 'data', 'namespace' => 'Data', 'middleware' => 'power:
     Route::post('shops/delete/{id}', 'ShopController@postDeleteShop');
     Route::post('shops/sort', 'ShopController@postSortShop');
 
-    # ADOPTIONS
+    // ADOPTIONS
     Route::get('adoptions', 'AdoptionController@getIndex');
     Route::get('stock', 'AdoptionController@getStockIndex');
     Route::get('adoptions/edit/{id}', 'AdoptionController@getEditAdoption');

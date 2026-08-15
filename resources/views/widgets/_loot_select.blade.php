@@ -48,7 +48,6 @@
                                 'class' => 'form-control reward-type',
                                 'placeholder' => 'Select Reward Type',
                             ],
-                    ,
                     ) !!}</td>
                     <td class="loot-row-select">
                         @if ($loot->rewardable_type == 'Item')
