@@ -127,7 +127,7 @@
                     </div>
                 </div>
             @endif
-            @if($request->transformation_id)
+            @if ($request->transformation_id)
                 <div class="row">
                     <div class="col-md-2 col-4">
                         <h5>{{ ucfirst(__('transformations.transformation')) }}</h5>
@@ -160,7 +160,7 @@
                         @endif
                     </div>
                 </div>
-        @endif
+            @endif
             <div class="row">
                 <div class="col-md-2 col-4">
                     <h5>Rarity</h5>

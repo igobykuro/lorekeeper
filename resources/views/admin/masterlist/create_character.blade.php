@@ -114,7 +114,7 @@
         </div>
         <div class="form-group">
             {!! Form::label('On Transfer Cooldown Until (Optional)') !!}
-                        {!! Form::text('transferrable_at', old('transferrable_at'), ['class' => 'form-control datepicker']) !!}
+            {!! Form::text('transferrable_at', old('transferrable_at'), ['class' => 'form-control datepicker']) !!}
         </div>
 
         <h3>Image Upload</h3>

@@ -7,18 +7,10 @@
     });
     $limits = hasLimits($object) ? getLimits($object) : null;
 
-    $prompts = \App\Models\Prompt\Prompt::orderBy('name')
-        ->pluck('name', 'id')
-        ->toArray();
-    $items = \App\Models\Item\Item::orderBy('name')
-        ->pluck('name', 'id')
-        ->toArray();
-    $currencies = \App\Models\Currency\Currency::orderBy('name')
-        ->pluck('name', 'id')
-        ->toArray();
-    $dynamics = \App\Models\Limit\DynamicLimit::orderBy('name')
-        ->pluck('name', 'id')
-        ->toArray();
+    $prompts = \App\Models\Prompt\Prompt::orderBy('name')->pluck('name', 'id')->toArray();
+    $items = \App\Models\Item\Item::orderBy('name')->pluck('name', 'id')->toArray();
+    $currencies = \App\Models\Currency\Currency::orderBy('name')->pluck('name', 'id')->toArray();
+    $dynamics = \App\Models\Limit\DynamicLimit::orderBy('name')->pluck('name', 'id')->toArray();
 
     // Hiding auto unlock options are good for cases where the user should not know the option exists for that object
     // Prompts are a good example--users shouldn't know they can auto-unlock prompts, as that would be confusing, since

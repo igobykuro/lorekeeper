@@ -25,14 +25,14 @@
                     {!! Form::select('subtype_id', $subtypes, Request::get('subtype_id'), ['class' => 'form-control mr-2', 'style' => 'width: 250px']) !!}
                 </div>
                 <div class="masterlist-search-field">
-                    {!! Form::label('transformation_id', ucfirst(__('transformations.transformation')).': ') !!}
+                    {!! Form::label('transformation_id', ucfirst(__('transformations.transformation')) . ': ') !!}
                     {!! Form::select('transformation_id', $transformations, Request::get('transformation_id'), ['class' => 'form-control']) !!}
-                    </div>
-                    <div class="masterlist-search-field">
-                        {!! Form::label('has_transformation', 'Has a '.ucfirst(__('transformations.transformation')).': ') !!}
-                        {!! Form::select('has_transformation', ['1' => 'Has a '.__('transformations.transformation').'.'], Request::get('has_transformation'), ['class' => 'form-control', 'placeholder' => 'Any']) !!}
-                    </div>
-                    <hr />
+                </div>
+                <div class="masterlist-search-field">
+                    {!! Form::label('has_transformation', 'Has a ' . ucfirst(__('transformations.transformation')) . ': ') !!}
+                    {!! Form::select('has_transformation', ['1' => 'Has a ' . __('transformations.transformation') . '.'], Request::get('has_transformation'), ['class' => 'form-control', 'placeholder' => 'Any']) !!}
+                </div>
+                <hr />
             @endif
             <div class="masterlist-search-field">
                 {!! Form::label('owner', 'Owner Username: ') !!}

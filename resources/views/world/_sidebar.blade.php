@@ -11,7 +11,7 @@
             <div class="sidebar-item"><a href="{{ url('world/universaltraits') }}" class="{{ set_active('world/universaltraits*') }}">Universal Trait Index</a></div>
         @endif
         <div class="sidebar-item"><a href="{{ url('world/character-categories') }}" class="{{ set_active('world/character-categories*') }}">Character Categories</a></div>
-        <div class="sidebar-item"><a href="{{ url('world/'.__('transformations.transformations')) }}" class="{{ set_active('world/'.__('transformations.transformations')) }}">{{ ucfirst(__('transformations.transformations')) }}</a></div>
+        <div class="sidebar-item"><a href="{{ url('world/' . __('transformations.transformations')) }}" class="{{ set_active('world/' . __('transformations.transformations')) }}">{{ ucfirst(__('transformations.transformations')) }}</a></div>
     </li>
     <li class="sidebar-section">
         <div class="sidebar-section-header">Items & Companions</div>

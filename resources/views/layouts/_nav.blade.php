@@ -130,7 +130,7 @@
                             Shops
                         </a>
                         <a class="dropdown-item" href="{{ url(__('dailies.dailies')) }}">
-                        {{__('dailies.dailies')}}
+                            {{ __('dailies.dailies') }}
                         </a>
                         <a class="dropdown-item" href="{{ url('adoptions') }}">
                             Adoption Center

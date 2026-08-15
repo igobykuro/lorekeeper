@@ -29,7 +29,10 @@
             <tr class="loot-row">
                 <td>{!! Form::select(
                     'rewardable_type[]',
-                    ['Item' => 'Item', 'Currency' => 'Currency', 'Pet' => 'Pet', 'Award' => ucfirst(__('awards.award'))] + ($showLootTables ? ['LootTable' => 'Loot Table'] : []) + ($showRaffles ? ['Raffle' => 'Raffle Ticket'] : []) + ($showRecipes ? ['Recipe' => 'Recipe'] : []),
+                    ['Item' => 'Item', 'Currency' => 'Currency', 'Pet' => 'Pet', 'Award' => ucfirst(__('awards.award'))] +
+                        ($showLootTables ? ['LootTable' => 'Loot Table'] : []) +
+                        ($showRaffles ? ['Raffle' => 'Raffle Ticket'] : []) +
+                        ($showRecipes ? ['Recipe' => 'Recipe'] : []),
                     null,
                     [
                         'class' => 'form-control reward-type',

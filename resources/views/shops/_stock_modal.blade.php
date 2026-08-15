@@ -110,11 +110,7 @@
                                     <p>Enter the code of the character you would like to use to purchase the item.</p>
                                     <div class="form-group">
                                         {!! Form::label('slug', 'Character Code') !!}
-                                        {!! Form::select(
-                                            'slug',
-                                            Auth::user()->characters()->get()->pluck('fullName', 'id'),
-                                            ['class' => 'form-control'],
-                                        ) !!}
+                                        {!! Form::select('slug', Auth::user()->characters()->get()->pluck('fullName', 'id'), ['class' => 'form-control']) !!}
                                     </div>
                                 </div>
                             </div>

@@ -121,17 +121,7 @@
                         </div>
                         <div class="form-group">
                             @php
-                                $variants =
-                                    ['0' => 'Default'] +
-                                    ($stack->pet->isVariant
-                                        ? $stack->pet->parent
-                                            ->variants()
-                                            ->pluck('name', 'id')
-                                            ->toArray()
-                                        : $stack->pet
-                                            ->variants()
-                                            ->pluck('name', 'id')
-                                            ->toArray());
+                                $variants = ['0' => 'Default'] + ($stack->pet->isVariant ? $stack->pet->parent->variants()->pluck('name', 'id')->toArray() : $stack->pet->variants()->pluck('name', 'id')->toArray());
                             @endphp
                             {!! Form::select('variant_id', $variants, $stack->pet->parent_id, ['class' => 'form-control']) !!}
                         </div>
@@ -155,17 +145,7 @@
                         </p>
                         <div class="form-group">
                             @php
-                                $variants =
-                                    ['0' => 'Default'] +
-                                    ($stack->pet->isVariant
-                                        ? $stack->pet->parent
-                                            ->variants()
-                                            ->pluck('name', 'id')
-                                            ->toArray()
-                                        : $stack->pet
-                                            ->variants()
-                                            ->pluck('name', 'id')
-                                            ->toArray());
+                                $variants = ['0' => 'Default'] + ($stack->pet->isVariant ? $stack->pet->parent->variants()->pluck('name', 'id')->toArray() : $stack->pet->variants()->pluck('name', 'id')->toArray());
                             @endphp
                             {!! Form::select('variant_id', $variants, $stack->pet->isVariant ? $stack->pet_id : 0, ['class' => 'form-control mt-2']) !!}
                         </div>
@@ -186,12 +166,7 @@
                         </p>
                         <div class="form-group">
                             @php
-                                $evolutions =
-                                    ['0' => 'Default'] +
-                                    $stack->pet
-                                        ->evolutions()
-                                        ->pluck('evolution_name', 'id')
-                                        ->toArray();
+                                $evolutions = ['0' => 'Default'] + $stack->pet->evolutions()->pluck('evolution_name', 'id')->toArray();
                             @endphp
                             {!! Form::select('evolution_id', $evolutions, $stack->evolution_id, ['class' => 'form-control mt-2']) !!}
                         </div>
