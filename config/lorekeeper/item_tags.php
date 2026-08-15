@@ -25,6 +25,26 @@ return [
         'background_color' => '#1fd1a7',
     ],
 
+    'coupon' => [
+        'name'             => 'Coupon',
+        'text_color'       => '#ffffff',
+        'background_color' => '#ff5ca8',
+    ],
+
+    'splice' => [
+        'name'             => 'Splice',
+        'text_color'       => '#ffffff',
+        'background_color' => '#a69bc6',
+    ],
+
+    // pokemon ftw
+    // if you want to change this, just edit the 'name' part.
+    'rare_candy' => [
+        'name'             => 'Rare Candy',
+        'text_color'       => '#ffffff',
+        'background_color' => '#96afdb',
+    ],
+
     'recipe' => [
         'name'             => 'Recipe',
         'text_color'       => '#ffffff',

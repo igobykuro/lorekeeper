@@ -14,6 +14,12 @@
     if (isset($showRecipes) && $showRecipes) {
         $recipes = App\Models\Recipe\Recipe::where('needs_unlocking', 1)->orderBy('name')->pluck('name', 'id');
     }
+    $pets = App\Models\Pet\Pet::orderBy('parent_id')
+        ->with('parent')
+        ->get()
+        ->sortBy(['parent_id', 'fullName'])
+        ->pluck('fullName', 'id')
+        ->toArray();
 @endphp
 
 <div id="lootRowData" class="hide">
@@ -22,7 +28,7 @@
             <tr class="loot-row">
                 <td>{!! Form::select(
                     'rewardable_type[]',
-                    ['Item' => 'Item', 'Currency' => 'Currency'] + ($showLootTables ? ['LootTable' => 'Loot Table'] : []) + ($showRaffles ? ['Raffle' => 'Raffle Ticket'] : []) + ($showRecipes ? ['Recipe' => 'Recipe'] : []),
+                    ['Item' => 'Item', 'Currency' => 'Currency', 'Pet' => 'Pet'] + ($showLootTables ? ['LootTable' => 'Loot Table'] : []) + ($showRaffles ? ['Raffle' => 'Raffle Ticket'] : []) + ($showRecipes ? ['Recipe' => 'Recipe'] : []),
                     null,
                     [
                         'class' => 'form-control reward-type',
@@ -37,6 +43,7 @@
     </table>
     {!! Form::select('rewardable_id[]', $items, null, ['class' => 'form-control item-select', 'placeholder' => 'Select Item']) !!}
     {!! Form::select('rewardable_id[]', $currencies, null, ['class' => 'form-control currency-select', 'placeholder' => 'Select Currency']) !!}
+    {!! Form::select('rewardable_id[]', $pets, null, ['class' => 'form-control pet-select', 'placeholder' => 'Select Pet']) !!}
     @if ($showLootTables)
         {!! Form::select('rewardable_id[]', $tables, null, ['class' => 'form-control table-select', 'placeholder' => 'Select Loot Table']) !!}
     @endif

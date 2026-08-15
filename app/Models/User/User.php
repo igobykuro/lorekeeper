@@ -14,6 +14,8 @@ use App\Models\Gallery\GallerySubmission;
 use App\Models\Item\Item;
 use App\Models\Item\ItemLog;
 use App\Models\Notification;
+use App\Models\Pet\Pet;
+use App\Models\Pet\PetLog;
 use App\Models\Rank\Rank;
 use App\Models\Rank\RankPower;
 use App\Models\Recipe\Recipe;
@@ -83,6 +85,15 @@ class User extends Authenticatable implements MustVerifyEmail {
      * @var string
      */
     public $timestamps = true;
+
+    /**
+     * Validation rules for updating.
+     *
+     * @var array
+     */
+    public static $avatarUpdateRules = [
+        'avatar'      => 'required|mimes:jpeg,jpg,gif,png,webp|max:1024',
+    ];
 
     /**********************************************************************************************
 
@@ -212,6 +223,13 @@ class User extends Authenticatable implements MustVerifyEmail {
         return $this->hasMany(CommentLike::class);
     }
 
+    /**
+     * Get the user's pets.
+     */
+    public function pets() {
+        return $this->belongsToMany(Pet::class, 'user_pets')->withPivot('data', 'updated_at', 'id', 'character_id', 'pet_name', 'has_image', 'evolution_id')->whereNull('user_pets.deleted_at');
+    }
+
     /**********************************************************************************************
 
         SCOPES
@@ -296,7 +314,7 @@ class User extends Authenticatable implements MustVerifyEmail {
      * @return bool
      */
     public function getIsStaffAttribute() {
-        return RankPower::where('rank_id', $this->rank_id)->exists() || $this->isAdmin;
+        return $this->isAdmin || $this->rank->powers->count();
     }
 
     /**
@@ -569,6 +587,27 @@ class User extends Authenticatable implements MustVerifyEmail {
             $query->with('sender')->where('sender_type', 'User')->where('sender_id', $user->id)->whereNotIn('log_type', ['Staff Grant', 'Prompt Rewards', 'Claim Rewards']);
         })->orWhere(function ($query) use ($user) {
             $query->with('recipient')->where('recipient_type', 'User')->where('recipient_id', $user->id)->where('log_type', '!=', 'Staff Removal');
+        })->orderBy('id', 'DESC');
+        if ($limit) {
+            return $query->take($limit)->get();
+        } else {
+            return $query->paginate(30);
+        }
+    }
+
+    /**
+     * Get the user's pet logs.
+     *
+     * @param int $limit
+     *
+     * @return \Illuminate\Pagination\LengthAwarePaginator|\Illuminate\Support\Collection
+     */
+    public function getPetLogs($limit = 10) {
+        $user = $this;
+        $query = PetLog::with('sender')->with('recipient')->with('pet')->where(function ($query) use ($user) {
+            $query->where('sender_id', $user->id)->whereNotIn('log_type', ['Staff Grant', 'Staff Removal']);
+        })->orWhere(function ($query) use ($user) {
+            $query->where('recipient_id', $user->id);
         })->orderBy('id', 'DESC');
         if ($limit) {
             return $query->take($limit)->get();

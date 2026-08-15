@@ -86,6 +86,9 @@ class BoxService extends Service {
                     case 'Raffle':
                         $type = 'App\Models\Raffle\Raffle';
                         break;
+                    case 'Pet':
+                        $type = 'App\Models\Pet\Pet';
+                        break;
                     case 'Recipe':
                         $type = 'App\Models\Recipe\Recipe';
                         break;

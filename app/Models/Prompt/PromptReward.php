@@ -6,6 +6,7 @@ use App\Models\Currency\Currency;
 use App\Models\Item\Item;
 use App\Models\Loot\LootTable;
 use App\Models\Model;
+use App\Models\Pet\Pet;
 use App\Models\Raffle\Raffle;
 
 class PromptReward extends Model {
@@ -68,6 +69,9 @@ class PromptReward extends Model {
                 break;
             case 'Raffle':
                 return $this->belongsTo(Raffle::class, 'rewardable_id');
+                break;
+            case 'Pet':
+                return $this->belongsTo(Pet::class, 'rewardable_id');
                 break;
             case 'Recipe':
                 return $this->belongsTo('App\Models\Recipe\Recipe', 'rewardable_id');

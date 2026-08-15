@@ -9,6 +9,7 @@ use App\Models\Criteria\Criterion;
 use App\Models\Currency\Currency;
 use App\Models\Item\Item;
 use App\Models\Loot\LootTable;
+use App\Models\Pet\Pet;
 use App\Models\Prompt\Prompt;
 use App\Models\Raffle\Raffle;
 use App\Models\Recipe\Recipe;
@@ -33,6 +34,10 @@ class SubmissionManager extends Service {
     /**
      * Creates a new submission.
      *
+     * @param array $data
+     * @param User  $user
+     * @param bool  $isClaim
+     * @param mixed $isDraft
      * @param array $data
      * @param User  $user
      * @param bool  $isClaim
@@ -659,6 +664,9 @@ class SubmissionManager extends Service {
                                 break;
                             }
                             $reward = Raffle::find($data['rewardable_id'][$key]);
+                            break;
+                        case 'Pet':
+                            $reward = Pet::find($data['rewardable_id'][$key]);
                             break;
                         case 'Recipe':
                             if (!$isStaff) {

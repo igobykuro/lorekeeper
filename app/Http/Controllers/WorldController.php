@@ -8,6 +8,8 @@ use App\Models\Feature\Feature;
 use App\Models\Feature\FeatureCategory;
 use App\Models\Item\Item;
 use App\Models\Item\ItemCategory;
+use App\Models\Pet\Pet;
+use App\Models\Pet\PetCategory;
 use App\Models\Rarity;
 use App\Models\Recipe\Recipe;
 use App\Models\Shop\Shop;
@@ -534,6 +536,88 @@ class WorldController extends Controller {
             'imageUrl'    => $recipe->imageUrl,
             'name'        => $recipe->displayName,
             'description' => $recipe->parsed_description,
+        ]);
+    }
+
+    /**
+     * Shows the pet categories page.
+     *
+     * @return \Illuminate\Contracts\Support\Renderable
+     */
+    public function getPetCategories(Request $request) {
+        $query = PetCategory::query();
+        $name = $request->get('name');
+        if ($name) {
+            $query->where('name', 'LIKE', '%'.$name.'%');
+        }
+
+        return view('world.pet_categories', [
+            'categories' => $query->orderBy('sort', 'DESC')->paginate(20)->appends($request->query()),
+        ]);
+    }
+
+    /**
+     * Shows the pets page.
+     *
+     * @return \Illuminate\Contracts\Support\Renderable
+     */
+    public function getPets(Request $request) {
+        $query = Pet::with('category', 'parent', 'variants', 'evolutions', 'dropData');
+        // only show pets with no parent_id if config is set
+        if (!config('lorekeeper.pets.include_variants')) {
+            $query->whereNull('parent_id');
+        }
+        $categoryVisibleCheck = PetCategory::visible(Auth::check() ? Auth::user() : null)->pluck('id', 'name')->toArray();
+        // query where category is visible, or, no category and visible
+        $query->where(function ($query) use ($categoryVisibleCheck) {
+            $query->whereIn('pet_category_id', $categoryVisibleCheck)->orWhereNull('pet_category_id');
+        });
+        $data = $request->only(['pet_category_id', 'name', 'sort']);
+        if (isset($data['pet_category_id']) && $data['pet_category_id'] != 'none') {
+            $query->where('pet_category_id', $data['pet_category_id']);
+        }
+        if (isset($data['name'])) {
+            $query->where('name', 'LIKE', '%'.$data['name'].'%');
+        }
+
+        if (isset($data['sort'])) {
+            switch ($data['sort']) {
+                case 'alpha':
+                    $query->sortAlphabetical();
+                    break;
+                case 'alpha-reverse':
+                    $query->sortAlphabetical(true);
+                    break;
+                case 'category':
+                    $query->sortCategory();
+                    break;
+                case 'newest':
+                    $query->sortNewest();
+                    break;
+                case 'oldest':
+                    $query->sortOldest();
+                    break;
+            }
+        } else {
+            $query->sortCategory();
+        }
+
+        return view('world.pets', [
+            'pets'       => $query->paginate(20)->appends($request->query()),
+            'categories' => ['none' => 'Any Category'] + PetCategory::orderBy('sort', 'DESC')->pluck('name', 'id')->toArray(),
+        ]);
+    }
+
+    /**
+     * Gets a specific pet page.
+     *
+     * @param mixed $id
+     */
+    public function getPet($id) {
+        $pet = Pet::with('category')->findOrFail($id);
+
+        return view('world.pet_page', [
+            'pet' => $pet,
         ]);
     }
 }

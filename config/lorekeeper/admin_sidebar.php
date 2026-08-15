@@ -113,6 +113,10 @@ return [
                 'url'  => 'admin/grants/items',
             ],
             [
+                'name' => 'Pet Grants',
+                'url'  => 'admin/grants/pets',
+            ],
+            [
                 'name' => 'Recipe Grants',
                 'url'  => 'admin/grants/recipes',
             ],
@@ -197,6 +201,14 @@ return [
             [
                 'name' => 'Items',
                 'url'  => 'admin/data/items',
+            ],
+            [
+                'name' => 'Pets',
+                'url'  => 'admin/data/pets',
+            ],
+            [
+                'name' => 'Dynamic Limits',
+                'url'  => 'admin/data/limits',
             ],
             [
                 'name' => 'Criteria Rewards',

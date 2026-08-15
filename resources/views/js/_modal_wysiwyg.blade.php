@@ -12,6 +12,8 @@ content_css: [
 '//www.tiny.cloud/css/codepen.min.css',
 '{{ asset('css/app.css') }}',
 '{{ asset('css/lorekeeper.css') }}',
-'{{ asset('css/custom.css') }}'
-]
+'{{ asset('css/custom.css') }}',
+'{{ asset('css/all.min.css') }}', // fontawesome
+],
+extended_valid_elements: '#i[class],#em[class]',
 });

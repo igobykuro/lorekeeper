@@ -65,12 +65,36 @@ Route::group(['prefix' => 'inventory', 'namespace' => 'Users'], function () {
     Route::get('selector', 'InventoryController@getSelector');
 });
 
+Route::group(['prefix' => 'pets', 'namespace' => 'Users'], function () {
+    Route::get('/', 'PetController@getIndex');
+    Route::post('transfer/{id}', 'PetController@postTransfer');
+    Route::post('delete/{id}', 'PetController@postDelete');
+    Route::post('name/{id}', 'PetController@postName');
+    Route::post('attach/{id}', 'PetController@postAttach');
+    Route::post('detach/{id}', 'PetController@postDetach');
+    Route::post('variant/{id}', 'PetController@postVariant');
+    Route::post('evolution/{id}', 'PetController@postEvolution');
+
+    Route::get('selector', 'PetController@getSelector');
+    Route::post('collect/{id}', 'PetController@postClaimPetDrops');
+    Route::post('collect-all', 'PetController@postClaimAllPetDrops');
+    Route::post('image/{id}', 'PetController@postCustomImage');
+    Route::post('description/{id}', 'PetController@postDescription');
+
+    Route::get('view/{id}', 'PetController@getPetPage')->where('id', '[0-9]+');
+    Route::post('view/{id}/edit', 'PetController@postEditPetProfile')->where('id', '[0-9]+');
+
+    Route::post('bond/{id}', 'PetController@postBond');
+});
+
 Route::group(['prefix' => 'characters', 'namespace' => 'Users'], function () {
     Route::get('/', 'CharacterController@getIndex');
     Route::post('sort', 'CharacterController@postSortCharacters');
 
     Route::get('transfers/{type}', 'CharacterController@getTransfers');
     Route::post('transfer/act/{id}', 'CharacterController@postHandleTransfer');
+
+    Route::post('{slug}/pets/sort', 'CharacterController@postSortCharacterPets');
 
     Route::get('myos', 'CharacterController@getMyos');
 });
@@ -237,6 +261,13 @@ Route::group(['prefix' => 'comments', 'namespace' => 'Comments'], function () {
     Route::post('/{id}/feature', 'CommentController@feature')->name('comments.feature');
     Route::post('/{id}/like/{action}', 'CommentController@like')->name('comments.like');
     Route::get('/liked', 'CommentController@getLikedComments');
+});
+
+/**************************************************************************************************
+    Limits
+**************************************************************************************************/
+Route::group(['prefix' => 'limits'], function () {
+    Route::post('unlock/{id}', 'Admin\LimitController@postUnlockLimits');
 });
 
 /**************************************************************************************************

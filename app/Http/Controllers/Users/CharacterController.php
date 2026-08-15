@@ -130,4 +130,21 @@ class CharacterController extends Controller {
 
         return redirect()->back();
     }
+
+    /**
+     * Sorts the characters pets.
+     *
+     * @param mixed $slug
+     */
+    public function postSortCharacterPets(CharacterManager $service, Request $request, $slug) {
+        if ($service->sortCharacterPets($request->only(['sort']), Auth::user())) {
+            flash('Pets sorted successfully.')->success();
+        } else {
+            foreach ($service->errors()->getMessages()['error'] as $error) {
+                flash($error)->error();
+            }
+        }
+
+        return redirect()->back();
+    }
 }

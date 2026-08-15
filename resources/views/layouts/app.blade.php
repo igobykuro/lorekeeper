@@ -171,9 +171,11 @@
                     content_css: [
                         '{{ asset('css/app.css') }}',
                         '{{ asset('css/lorekeeper.css') }}',
+                        '{{ asset('css/all.min.css') }}', // fontawesome,
                         '{{ asset('css/custom.css') }}'
                     ],
                     spoiler_caption: 'Toggle Spoiler',
+                    extended_valid_elements: '#i[class],#em[class]', // # <- sets autopadding with &nbsp;
                     target_list: false
                 });
                 bsCustomFileInput.init();

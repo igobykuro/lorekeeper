@@ -35,7 +35,10 @@ class DesignUpdateManager extends Service {
      *
      * @param Character $character
      * @param User      $user
+     * @param Character $character
+     * @param User      $user
      *
+     * @return bool|CharacterDesignUpdate
      * @return bool|CharacterDesignUpdate
      */
     public function createDesignUpdateRequest($character, $user) {
