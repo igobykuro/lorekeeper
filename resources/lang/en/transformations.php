@@ -17,9 +17,9 @@ return [
     /
     */
 
-    'transformation' => 'transformation',                         // use __
-    'transformations' => 'transformations',                       // use __
-    'transformations_' => 'transformation|transformations',                // Use trans_choice instead of __
+    'transformation' => 'alter',                         // use __
+    'transformations' => 'alters',                       // use __
+    'transformations_' => 'alter|alters',                // Use trans_choice instead of __
 
 
     'form' => 'form',                         // use __
