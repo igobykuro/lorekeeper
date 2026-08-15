@@ -269,8 +269,24 @@ Route::group(['prefix' => __('dailies.dailies')], function() {
 
 
 /**************************************************************************************************
-    Comments
+    Adoptions
 **************************************************************************************************/
+
+Route::group(['prefix' => 'adoptions'], function() {
+    Route::post('buy', 'AdoptionController@postBuy'); 
+    Route::get('history', 'AdoptionController@getPurchaseHistory');
+});
+
+Route::group(['prefix' => 'surrenders'], function() {
+Route::get('new', 'SurrenderController@getSurrender');
+Route::get('/', 'SurrenderController@getIndex')->where('status', 'pending|approved|rejected');
+Route::post('new/post', 'SurrenderController@postSurrender');
+});
+
+
+/**************************************************************************************************	
+    Comments
+**************************************************************************************************/	
 Route::group(['prefix' => 'comments', 'namespace' => 'Comments'], function () {
     Route::post('make/{model}/{id}', 'CommentController@store');
     Route::delete('/{comment}', 'CommentController@destroy')->name('comments.destroy');

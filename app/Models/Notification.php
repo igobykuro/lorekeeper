@@ -137,6 +137,8 @@ class Notification extends Model {
     public const CHARACTER_TRANSFER_ACCEPTABLE = 38;
     public const BOOKMARK_GIFT_WRITING = 39;
     public const USER_REACTIVATED = 103;
+    public const SURRENDER_APPROVED                = 218;
+    const SURRENDER_REJECTED                = 219;
     public const USER_DEACTIVATED = 104;
     public const SUBMISSION_CANCELLED = 108;
     public const CLAIM_CANCELLED = 109;

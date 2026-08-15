@@ -20,6 +20,8 @@ use App\Models\Pet\PetLog;
 use App\Models\Rank\Rank;
 use App\Models\Recipe\Recipe;
 use App\Models\Shop\ShopLog;
+use App\Models\Adoption\AdoptionLog;
+use App\Models\User\UserCharacterLog;
 use App\Models\Submission\Submission;
 use App\Traits\Commenter;
 use Carbon\Carbon;
@@ -681,6 +683,38 @@ class User extends Authenticatable implements MustVerifyEmail {
             return $query->paginate(30);
         }
     }
+
+    /**
+     * Get the user's adopt purchase logs.
+     *
+     * @param int $limit
+     *
+     * @return \Illuminate\Pagination\LengthAwarePaginator|\Illuminate\Support\Collection
+     */
+    public function getAdoptionLogs($limit = 10)
+    {
+        $user = $this;
+        $query = AdoptionLog::where('user_id', $this->id)->with('character')->with('adoption')->with('adopt')->with('currency')->orderBy('id', 'DESC');
+        if($limit) return $query->take($limit)->get();
+        else return $query->paginate(30);
+    }
+    
+      }
+
+    /**
+     * Get the user's adopt purchase logs.
+     *
+     * @param  int  $limit
+     * @return \Illuminate\Support\Collection|\Illuminate\Pagination\LengthAwarePaginator
+     */
+    public function getAdoptionLogs($limit = 10)
+    {
+        $user = $this;
+        $query = AdoptionLog::where('user_id', $this->id)->with('character')->with('adoption')->with('adopt')->with('currency')->orderBy('id', 'DESC');
+        if($limit) return $query->take($limit)->get();
+        else return $query->paginate(30);
+    }
+
 
     /**
      * Get the user's character ownership logs.

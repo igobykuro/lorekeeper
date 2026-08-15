@@ -160,6 +160,11 @@ Route::group(['prefix' => __('dailies.dailies')], function() {
 });
 
 
+Route::group(['prefix' => 'adoptions'], function() {
+    Route::get('/', 'AdoptionController@getAdoption');
+    Route::get('{id}/{stockId}', 'AdoptionController@getAdoptionStock')->where(['id' => '[0-9]+', 'stockId' => '[0-9]+']);
+});
+
 /**************************************************************************************************
     Site Pages
 **************************************************************************************************/
@@ -182,6 +187,9 @@ Route::group(['prefix' => 'submissions', 'namespace' => 'Users'], function () {
 });
 Route::group(['prefix' => 'claims', 'namespace' => 'Users'], function () {
     Route::get('view/{id}', 'SubmissionController@getClaim');
+});
+Route::group(['prefix' => 'surrender'], function() {
+    Route::get('view/{id}', 'SurrenderController@getPublicSurrender');
 });
 
 /**************************************************************************************************

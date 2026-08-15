@@ -21,6 +21,7 @@
         <div class="sidebar-section-header">Crafting</div>
         <div class="sidebar-item"><a href="{{ url('crafting') }}" class="{{ set_active('crafting') }}">My Recipes</a></div>
         <div class="sidebar-item"><a href="{{ url('world/recipes') }}" class="{{ set_active('world/recipes') }}">All Recipes</a></div>
+        <div class="sidebar-item"><a href="{{ url('surrenders') }}" class="{{ set_active('surrenders') }}">My Surrenders</a></div>
     </li>
     <li class="sidebar-section">
         <div class="sidebar-section-header">Reports</div>
