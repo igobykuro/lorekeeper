@@ -374,6 +374,16 @@ Route::group(['prefix' => 'data', 'namespace' => 'Data', 'middleware' => 'power:
     Route::post('criteria-defaults/edit/{id}', 'CriterionController@postCreateEditCriterionDefault');
     Route::get('criteria-defaults/delete/{id}', 'CriterionController@getDeleteCriterionDefault');
     Route::post('criteria-defaults/delete/{id}', 'CriterionController@postDeleteCriterionDefault');
+
+    # TRANSFORMATIONS
+    Route::get('transformations', 'TransformationController@getTransformationIndex');
+    Route::get('transformations/create', 'TransformationController@getCreateTransformation');
+    Route::get('transformations/edit/{id}', 'TransformationController@getEditTransformation');
+    Route::get('transformations/delete/{id}', 'TransformationController@getDeleteTransformation');
+    Route::post('transformations/create', 'TransformationController@postCreateEditTransformation');
+    Route::post('transformations/edit/{id?}', 'TransformationController@postCreateEditTransformation');
+    Route::post('transformations/delete/{id}', 'TransformationController@postDeleteTransformation');
+    Route::post('transformations/sort', 'TransformationController@postSortTransformations');
 });
 
 // PAGES
@@ -466,6 +476,7 @@ Route::group(['prefix' => 'masterlist', 'namespace' => 'Characters', 'middleware
     Route::post('create-myo', 'CharacterController@postCreateMyo');
 
     Route::get('check-subtype', 'CharacterController@getCreateCharacterMyoSubtype');
+    Route::get('check-transformation', 'CharacterController@getCreateCharacterMyoTransformation');
 });
 Route::group(['prefix' => 'character', 'namespace' => 'Characters', 'middleware' => 'power:edit_inventories'], function () {
     Route::post('{slug}/grant', 'GrantController@postCharacterCurrency');
@@ -500,6 +511,8 @@ Route::group(['prefix' => 'character', 'namespace' => 'Characters', 'middleware'
     Route::post('image/{id}/delete', 'CharacterImageController@postImageDelete');
 
     Route::post('{slug}/images/sort', 'CharacterImageController@postSortImages');
+    Route::get('image/transformation', 'CharacterImageController@getNewImageTransformation');
+    Route::get('image/traits/transformation', 'CharacterImageController@getEditImageTransformation');
 
     // CHARACTER
     Route::get('{slug}/stats', 'CharacterController@getEditCharacterStats');

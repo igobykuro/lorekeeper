@@ -118,6 +118,22 @@
         {!! Form::select('species_id', $specieses, old('species_id') ?: $character->image->species_id, ['class' => 'form-control', 'id' => 'species']) !!}
     </div>
 
+    <hr>
+    <h5>{{ ucfirst(__('transformations.transformations')) }}</h5>
+    <div class="form-group" id="transformations">
+        {!! Form::label(ucfirst(__('transformations.transformation')) . ' (Optional)') !!}
+        {!! Form::select('transformation_id', $transformations, null, ['class' => 'form-control', 'id' => 'transformation']) !!}
+    </div>
+    <div class="form-group">
+        {!! Form::label(ucfirst(__('transformations.transformation')) . ' Tab Info (Optional)') !!}{!! add_help('This is text that will show alongside the ' . __('transformations.transformation') . ' name in the tabs, so try to keep it short.') !!}
+        {!! Form::text('transformation_info', old('transformation_info') ?: $character->image->transformation_info, ['class' => 'form-control mr-2', 'placeholder' => 'Tab Info (Optional)']) !!}
+    </div>
+    <div class="form-group">
+        {!! Form::label(ucfirst(__('transformations.transformation')) . ' Origin/Lore (Optional)') !!}{!! add_help('This is text that will show alongside the ' . __('transformations.transformation') . ' name on the image info area. Explains why the character takes this form, how, etc. Should be pretty short.') !!}
+        {!! Form::text('transformation_description', old('transformation_description') ?: $character->image->transformation_description, ['class' => 'form-control mr-2', 'placeholder' => 'Origin Info (Optional)']) !!}
+    </div>
+    <hr>
+
     <div class="form-group" id="subtypes">
         {!! Form::label('Subtype (Optional)') !!}
         {!! Form::select('subtype_id', $subtypes, old('subtype_id') ?: $character->image->subtype_id, ['class' => 'form-control', 'id' => 'subtype']) !!}
@@ -154,6 +170,27 @@
     </div>
     {!! Form::close() !!}
 
+    <div class="form-group">
+        {!! Form::label('Character Rarity') !!}
+        {!! Form::select('rarity_id', $rarities, old('rarity_id') ?: $character->image->rarity_id, ['class' => 'form-control']) !!}
+    </div>
+
+    <div class="form-group">
+        {!! Form::label('Traits') !!}
+        <div id="featureList">
+        </div>
+        <div><a href="#" class="btn btn-primary" id="add-feature">Add Trait</a></div>
+        <div class="feature-row hide mb-2">
+            {!! Form::select('feature_id[]', $features, null, ['class' => 'form-control mr-2 feature-select', 'placeholder' => 'Select Trait']) !!}
+            {!! Form::text('feature_data[]', null, ['class' => 'form-control mr-2', 'placeholder' => 'Extra Info (Optional)']) !!}
+            <a href="#" class="remove-feature btn btn-danger mb-2">×</a>
+        </div>
+    </div>
+
+    <div class="text-right">
+        {!! Form::submit('Create Image', ['class' => 'btn btn-primary']) !!}
+    </div>
+    {!! Form::close() !!}
 @endsection
 
 @section('scripts')
@@ -333,6 +370,15 @@
                 dataType: "text"
             }).done(function(res) {
                 $("#subtypes").html(res);
+            }).fail(function(jqXHR, textStatus, errorThrown) {
+                alert("AJAX call failed: " + textStatus + ", " + errorThrown);
+            });
+            $.ajax({
+                type: "GET",
+                url: "{{ url('admin/character/image/transformation') }}?species=" + species + "&id=" + id,
+                dataType: "text"
+            }).done(function(res) {
+                $("#transformations").html(res);
             }).fail(function(jqXHR, textStatus, errorThrown) {
                 alert("AJAX call failed: " + textStatus + ", " + errorThrown);
             });

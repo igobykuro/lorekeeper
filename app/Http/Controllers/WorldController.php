@@ -20,6 +20,7 @@ use App\Models\Species\Subtype;
 use App\Models\User\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use App\Models\Character\CharacterTransformation as Transformation;
 
 class WorldController extends Controller {
     /*
@@ -732,6 +733,23 @@ class WorldController extends Controller {
 
         return view('world.pet_page', [
             'pet' => $pet,
+        ]);
+    }
+
+     /**
+     * Shows the Transformations page.
+     *
+     * @return \Illuminate\Contracts\Support\Renderable
+     */
+    public function getTransformations(Request $request) {
+        $query = Transformation::query();
+        $name = $request->get('name');
+        if ($name) {
+            $query->where('name', 'LIKE', '%'.$name.'%');
+        }
+
+        return view('world.transformations', [
+            'transformations' => $query->orderBy('sort', 'DESC')->paginate(20)->appends($request->query()),
         ]);
     }
 }

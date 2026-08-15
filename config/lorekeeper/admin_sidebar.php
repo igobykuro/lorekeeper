@@ -234,6 +234,10 @@ return [
                 'name' => 'Recipes',
                 'url'  => 'admin/data/recipes',
             ],
+            [
+                'name' => 'Transformations',
+                'url'  => 'admin/data/transformations',
+            ],
         ],
     ],
     'Raffles'    => [

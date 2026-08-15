@@ -36,8 +36,29 @@
                     {!! Form::select('subtype_id', $subtypes, $request->subtype_id, ['class' => 'form-control', 'id' => 'subtype']) !!}
                 </div>
             @endif
-
         </div>
+
+        <hr>
+        <h5>{{ ucfirst(__('transformations.transformations')) }}</h5>
+        <div class="form-group">
+            {!! Form::label('transformation_id', 'Transformation') !!}
+            @if ($request->character->is_myo_slot && $request->character->image->transformation_id)
+                <div class="alert alert-secondary">{!! $request->character->image->transformation->displayName !!}</div>
+            @else
+                <div id="transformations">
+                    {!! Form::select('transformation_id', $transformations, $request->transformation_id, ['class' => 'form-control', 'id' => 'transformation']) !!}
+                </div>
+            @endif
+        </div>
+        <div class="form-group">
+            {!! Form::label(ucfirst(__('transformations.transformation')) . ' Tab Info (Optional)') !!}{!! add_help('This is text that will show alongside the ' . __('transformations.transformation') . ' name in the tabs, so try to keep it short.') !!}
+            {!! Form::text('transformation_info', $request->transformation_info, ['class' => 'form-control mr-2', 'placeholder' => 'Tab Info (Optional)']) !!}
+        </div>
+        <div class="form-group">
+            {!! Form::label(ucfirst(__('transformations.transformation')) . ' Origin/Lore (Optional)') !!}{!! add_help('This is text that will show alongside the ' . __('transformations.transformation') . ' name on the image info area. Explains why the character takes this form, how, etc. Should be pretty short.') !!}
+            {!! Form::text('transformation_description', $request->transformation_description, ['class' => 'form-control mr-2', 'placeholder' => 'Origin Info (Optional)']) !!}
+        </div>
+        <hr>
 
         <div class="form-group">
             {!! Form::label('rarity_id', 'Character Rarity') !!}
@@ -106,6 +127,40 @@
                     </div>
                 </div>
             @endif
+            @if($request->transformation_id)
+                <div class="row">
+                    <div class="col-md-2 col-4">
+                        <h5>{{ ucfirst(__('transformations.transformation')) }}</h5>
+                    </div>
+                    <div class="col-md-10 col-8">
+                        @if ($request->character->is_myo_slot && $request->character->image->transformation_id)
+                            {!! $request->character->image->transformation->displayName !!}
+                        @else
+                            {!! $request->transformation_id ? $request->transformation->displayName : 'None Selected' !!}
+                        @endif
+                    </div>
+                    <div class="col-md-2 col-4">
+                        <strong>Tab Info</strong>
+                    </div>
+                    <div class="col-md-10 col-8">
+                        @if ($request->character->is_myo_slot && $request->character->image->transformation_info)
+                            {{ $request->character->image->transformation_info }}
+                        @else
+                            {!! $request->transformation_info ? $request->transformation_info : 'No tab info given.' !!}
+                        @endif
+                    </div>
+                    <div class="col-md-2 col-4">
+                        <strong>Description</strong>
+                    </div>
+                    <div class="col-md-10 col-8">
+                        @if ($request->character->is_myo_slot && $request->character->image->transformation_description)
+                            {{ $request->character->image->transformation_description }}
+                        @else
+                            {!! $request->transformation_description ? $request->transformation_description : 'No description given.' !!}
+                        @endif
+                    </div>
+                </div>
+        @endif
             <div class="row">
                 <div class="col-md-2 col-4">
                     <h5>Rarity</h5>
@@ -153,6 +208,15 @@
                 dataType: "text"
             }).done(function(res) {
                 $("#subtypes").html(res);
+            }).fail(function(jqXHR, textStatus, errorThrown) {
+                alert("AJAX call failed: " + textStatus + ", " + errorThrown);
+            });
+            $.ajax({
+                type: "GET",
+                url: "{{ url('designs/traits/transformation') }}?species=" + species + "&id=" + id,
+                dataType: "text"
+            }).done(function(res) {
+                $("#transformations").html(res);
             }).fail(function(jqXHR, textStatus, errorThrown) {
                 alert("AJAX call failed: " + textStatus + ", " + errorThrown);
             });

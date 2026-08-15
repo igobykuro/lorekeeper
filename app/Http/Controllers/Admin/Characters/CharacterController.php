@@ -18,6 +18,7 @@ use App\Services\CharacterManager;
 use App\Services\TradeManager;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use App\Models\Character\CharacterTransformation as Transformation;
 
 class CharacterController extends Controller {
     /*
@@ -53,6 +54,7 @@ class CharacterController extends Controller {
             'specieses'   => ['0' => 'Select Species'] + Species::orderBy('sort', 'DESC')->pluck('name', 'id')->toArray(),
             'subtypes'    => ['0' => 'Pick a Species First'],
             'features'    => Feature::getDropdownItems(1),
+            'transformations' => ['0' => 'Pick a Species First'],
             'isMyo'       => false,
         ]);
     }
@@ -69,6 +71,7 @@ class CharacterController extends Controller {
             'specieses'   => ['0' => 'Select Species'] + Species::orderBy('sort', 'DESC')->pluck('name', 'id')->toArray(),
             'subtypes'    => ['0' => 'Pick a Species First'],
             'features'    => Feature::getDropdownItems(1),
+            'transformations' => ['0' => 'Pick a Species First'],
             'isMyo'       => true,
         ]);
     }
@@ -84,6 +87,19 @@ class CharacterController extends Controller {
         return view('admin.masterlist._create_character_subtype', [
             'subtypes' => ['0' => 'Select Subtype'] + Subtype::where('species_id', '=', $species)->orderBy('sort', 'DESC')->pluck('name', 'id')->toArray(),
             'isMyo'    => $request->input('myo'),
+        ]);
+    }
+
+    /**
+     * Shows the edit image transformation portion of the modal.
+     *
+     * @return \Illuminate\Contracts\Support\Renderable
+     */
+    public function getCreateCharacterMyoTransformation(Request $request) {
+        $species = $request->input('species');
+        return view('admin.masterlist._create_character_transformation', [
+            'transformations' => ['0' => 'Select '.ucfirst(__('transformations.transformation'))] + Transformation::where('species_id','=',$species)->orWhereNull('species_id')->orderBy('sort', 'DESC')->pluck('name', 'id')->toArray(),
+            'isMyo'           => $request->input('myo'),
         ]);
     }
 
@@ -104,7 +120,7 @@ class CharacterController extends Controller {
             'designer_id', 'designer_url',
             'artist_id', 'artist_url',
             'species_id', 'subtype_id', 'rarity_id', 'feature_id', 'feature_data',
-            'image', 'thumbnail', 'image_description',
+            'image', 'thumbnail', 'image_description', 'transformation_id','transformation_info','transformation_description'
         ]);
         if ($character = $service->createCharacter($data, Auth::user())) {
             flash('Character created successfully.')->success();
@@ -136,7 +152,7 @@ class CharacterController extends Controller {
             'designer_id', 'designer_url',
             'artist_id', 'artist_url',
             'species_id', 'subtype_id', 'rarity_id', 'feature_id', 'feature_data',
-            'image', 'thumbnail',
+            'image', 'thumbnail', 'transformation_id','transformation_info','transformation_description'
         ]);
         if ($character = $service->createCharacter($data, Auth::user(), true)) {
             flash('MYO slot created successfully.')->success();

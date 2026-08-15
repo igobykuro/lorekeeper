@@ -114,7 +114,7 @@
         </div>
         <div class="form-group">
             {!! Form::label('On Transfer Cooldown Until (Optional)') !!}
-            {!! Form::text('transferrable_at', old('transferrable_at'), ['class' => 'form-control datepicker']) !!}
+                        {!! Form::text('transferrable_at', old('transferrable_at'), ['class' => 'form-control datepicker']) !!}
         </div>
 
         <h3>Image Upload</h3>
@@ -229,6 +229,22 @@
             {!! Form::select('subtype_id', $subtypes, old('subtype_id'), ['class' => 'form-control disabled', 'id' => 'subtype']) !!}
         </div>
 
+        <hr>
+        <h5>{{ ucfirst(__('transformations.transformations')) }}</h5>
+        <div class="form-group" id="transformations">
+            {!! Form::label(ucfirst(__('transformations.transformation')) . ' (Optional)') !!} {!! add_help('This will make the image have the selected ' . __('transformations.transformation') . ' id.') !!}
+            {!! Form::select('transformation_id', $transformations, old('transformation_id'), ['class' => 'form-control']) !!}
+        </div>
+        <div class="form-group">
+            {!! Form::label(ucfirst(__('transformations.transformation')) . ' Tab Info (Optional)') !!}{!! add_help('This is text that will show alongside the ' . __('transformations.transformation') . ' name in the tabs, so try to keep it short.') !!}
+            {!! Form::text('transformation_info', old('transformation_info'), ['class' => 'form-control mr-2', 'placeholder' => 'Tab Info (Optional)']) !!}
+        </div>
+        <div class="form-group">
+            {!! Form::label(ucfirst(__('transformations.transformation')) . ' Origin/Lore (Optional)') !!}{!! add_help('This is text that will show alongside the ' . __('transformations.transformation') . ' name on the image info area. Explains why the character takes this form, how, etc. Should be pretty short.') !!}
+            {!! Form::text('transformation_description', old('transformation_description'), ['class' => 'form-control mr-2', 'placeholder' => 'Origin Info (Optional)']) !!}
+        </div>
+        <hr>
+
         <div class="form-group">
             {!! Form::label('Character Rarity') !!} @if ($isMyo)
                 {!! add_help('This will lock the slot into a particular rarity. Leave it blank if you would like to give the user more choices.') !!}
@@ -279,6 +295,15 @@
                 dataType: "text"
             }).done(function(res) {
                 $("#subtypes").html(res);
+            }).fail(function(jqXHR, textStatus, errorThrown) {
+                alert("AJAX call failed: " + textStatus + ", " + errorThrown);
+            });
+            $.ajax({
+                type: "GET",
+                url: "{{ url('admin/masterlist/check-transformation') }}?species=" + species + "&myo=" + myo,
+                dataType: "text"
+            }).done(function(res) {
+                $("#transformations").html(res);
             }).fail(function(jqXHR, textStatus, errorThrown) {
                 alert("AJAX call failed: " + textStatus + ", " + errorThrown);
             });
