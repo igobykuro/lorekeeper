@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Award\Award;
 use App\Models\Award\AwardCategory;
 use App\Models\Character\CharacterCategory;
+use App\Models\Character\CharacterTransformation as Transformation;
 use App\Models\Currency\Currency;
 use App\Models\Feature\Feature;
 use App\Models\Feature\FeatureCategory;
@@ -20,7 +21,6 @@ use App\Models\Species\Subtype;
 use App\Models\User\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use App\Models\Character\CharacterTransformation as Transformation;
 
 class WorldController extends Controller {
     /*
@@ -736,7 +736,7 @@ class WorldController extends Controller {
         ]);
     }
 
-     /**
+    /**
      * Shows the Transformations page.
      *
      * @return \Illuminate\Contracts\Support\Renderable
