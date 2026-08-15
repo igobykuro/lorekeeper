@@ -204,7 +204,7 @@ return [
             ],
             [
                 'name' => 'Dailies',
-                'url' => 'admin/data/dailies'
+                'url'  => 'admin/data/dailies',
             ],
             [
                 'name' => 'Adoption Center',
