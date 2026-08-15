@@ -17,16 +17,17 @@
         ->sortBy(['parent_id', 'fullName'])
         ->pluck('fullName', 'id')
         ->toArray();
+    $awards = \App\Models\Award\Award::orderBy('name')->pluck('name', 'id');
 @endphp
 
 <div class="text-right mb-3">
-    <a href="#" class="btn btn-outline-info" id="addLoot">Add Reward</a>
+    <a href="#" class="btn btn-outline-info" id="addLoot">Add {{ isset($progression) && $progression ? 'Progression' : 'Reward' }}</a>
 </div>
 <table class="table table-sm" id="lootTable">
     <thead>
         <tr>
-            <th width="35%">Reward Type</th>
-            <th width="35%">Reward</th>
+            <th width="35%">{{ isset($progression) && $progression ? 'Progression' : 'Reward' }} Type</th>
+            <th width="35%">{{ isset($progression) && $progression ? 'Progression' : 'Reward' }}</th>
             <th width="20%">Quantity</th>
             <th width="10%"></th>
         </tr>
@@ -36,13 +37,18 @@
             @foreach ($loots as $loot)
                 <tr class="loot-row">
                     <td>{!! Form::select(
+                        
                         'rewardable_type[]',
-                        ['Item' => 'Item', 'Currency' => 'Currency', 'Pet' => 'Pet'] + ($showLootTables ? ['LootTable' => 'Loot Table'] : []) + ($showRaffles ? ['Raffle' => 'Raffle Ticket'] : []) + ($showRecipes ? ['Recipe' => 'Recipe'] : []),
+                       
+                        ['Item' => 'Item', 'Currency' => 'Currency', 'Pet' => 'Pet', 'Award' => ucfirst(__('awards.award'))] + ($showLootTables ? ['LootTable' => 'Loot Table'] : []) + ($showRaffles ? ['Raffle' => 'Raffle Ticket'] : []) + ($showRecipes ? ['Recipe' => 'Recipe'] : []),
+                       
                         $loot->rewardable_type,
+                       
                         [
-                            'class' => 'form-control reward-type',
-                            'placeholder' => 'Select Reward Type',
-                        ],
+                                'class' => 'form-control reward-type',
+                                'placeholder' => 'Select Reward Type',
+                            ],
+                    ,
                     ) !!}</td>
                     <td class="loot-row-select">
                         @if ($loot->rewardable_type == 'Item')
@@ -57,6 +63,8 @@
                             {!! Form::select('rewardable_id[]', $raffles, $loot->rewardable_id, ['class' => 'form-control raffle-select selectize', 'placeholder' => 'Select Raffle']) !!}
                         @elseif($showRecipes && $loot->rewardable_type == 'Recipe')
                             {!! Form::select('rewardable_id[]', $recipes, $loot->rewardable_id, ['class' => 'form-control recipe-select selectize', 'placeholder' => 'Select Recipe']) !!}
+                        @elseif($loot->rewardable_type == 'Award')
+                            {!! Form::select('rewardable_id[]', $awards, $loot->rewardable_id, ['class' => 'form-control award-select selectize', 'placeholder' => 'Select ' . ucfirst(__('awards.award'))]) !!}
                         @endif
                     </td>
                     <td>{!! Form::text('quantity[]', $loot->quantity, ['class' => 'form-control']) !!}</td>

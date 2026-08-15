@@ -3,6 +3,8 @@
 namespace App\Models\Character;
 
 use App\Facades\Notifications;
+use App\Models\Award\Award;
+use App\Models\Award\AwardLog;
 use App\Models\Currency\Currency;
 use App\Models\Currency\CurrencyLog;
 use App\Models\Gallery\GalleryCharacter;
@@ -195,6 +197,13 @@ class Character extends Model {
      */
     public function items() {
         return $this->belongsToMany(Item::class, 'character_items')->withPivot('count', 'data', 'updated_at', 'id', 'stack_name')->whereNull('character_items.deleted_at');
+    }
+
+    /**
+     * Get the character's awards.
+     */
+    public function awards() {
+        return $this->belongsToMany('App\Models\Award\Award', 'character_awards')->withPivot('count', 'data', 'updated_at', 'id')->whereNull('character_awards.deleted_at');
     }
 
     /**********************************************************************************************
@@ -484,6 +493,29 @@ class Character extends Model {
         $character = $this;
 
         $query = ItemLog::with('item')->where(function ($query) use ($character) {
+            $query->with('sender.rank')->where('sender_type', 'Character')->where('sender_id', $character->id)->where('log_type', '!=', 'Staff Grant');
+        })->orWhere(function ($query) use ($character) {
+            $query->with('recipient.rank')->where('recipient_type', 'Character')->where('recipient_id', $character->id)->where('log_type', '!=', 'Staff Removal');
+        })->orderBy('id', 'DESC');
+
+        if ($limit) {
+            return $query->take($limit)->get();
+        } else {
+            return $query->paginate(30);
+        }
+    }
+
+    /**
+     * Get the character's award logs.
+     *
+     * @param int $limit
+     *
+     * @return \Illuminate\Pagination\LengthAwarePaginator|\Illuminate\Support\Collection
+     */
+    public function getAwardLogs($limit = 10) {
+        $character = $this;
+
+        $query = AwardLog::with('award')->where(function ($query) use ($character) {
             $query->with('sender.rank')->where('sender_type', 'Character')->where('sender_id', $character->id)->where('log_type', '!=', 'Staff Grant');
         })->orWhere(function ($query) use ($character) {
             $query->with('recipient.rank')->where('recipient_type', 'Character')->where('recipient_id', $character->id)->where('log_type', '!=', 'Staff Removal');

@@ -20,6 +20,7 @@
         ->sortBy(['parent_id', 'fullName'])
         ->pluck('fullName', 'id')
         ->toArray();
+    $awards = \App\Models\Award\Award::orderBy('name')->pluck('name', 'id');
 @endphp
 
 <div id="lootRowData" class="hide">
@@ -28,7 +29,7 @@
             <tr class="loot-row">
                 <td>{!! Form::select(
                     'rewardable_type[]',
-                    ['Item' => 'Item', 'Currency' => 'Currency', 'Pet' => 'Pet'] + ($showLootTables ? ['LootTable' => 'Loot Table'] : []) + ($showRaffles ? ['Raffle' => 'Raffle Ticket'] : []) + ($showRecipes ? ['Recipe' => 'Recipe'] : []),
+                    ['Item' => 'Item', 'Currency' => 'Currency', 'Pet' => 'Pet', 'Award' => ucfirst(__('awards.award'))] + ($showLootTables ? ['LootTable' => 'Loot Table'] : []) + ($showRaffles ? ['Raffle' => 'Raffle Ticket'] : []) + ($showRecipes ? ['Recipe' => 'Recipe'] : []),
                     null,
                     [
                         'class' => 'form-control reward-type',
@@ -50,6 +51,7 @@
     @if ($showRaffles)
         {!! Form::select('rewardable_id[]', $raffles, null, ['class' => 'form-control raffle-select', 'placeholder' => 'Select Raffle']) !!}
     @endif
+    {!! Form::select('rewardable_id[]', $awards, null, ['class' => 'form-control award-select', 'placeholder' => 'Select ' . ucfirst(__('awards.award'))]) !!}
     @if ($showRecipes)
         {!! Form::select('rewardable_id[]', $recipes, null, ['class' => 'form-control recipe-select', 'placeholder' => 'Select Recipe']) !!}
     @endif

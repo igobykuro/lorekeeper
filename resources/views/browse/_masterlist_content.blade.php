@@ -156,7 +156,7 @@
                 <th>Owner</th>
                 <th>Name</th>
                 <th>Rarity</th>
-                <th>Species</th>
+                <th>{{ ucfirst(__('lorekeeper.species')) }}</th>
                 <th>Created</th>
             </tr>
         </thead>
