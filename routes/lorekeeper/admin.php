@@ -326,7 +326,7 @@ Route::group(['prefix' => 'data', 'namespace' => 'Data', 'middleware' => 'power:
     Route::post('prompts/create', 'PromptController@postCreateEditPrompt');
     Route::post('prompts/edit/{id?}', 'PromptController@postCreateEditPrompt');
     Route::post('prompts/delete/{id}', 'PromptController@postDeletePrompt');
-    
+
     // DAILIES
     Route::get('dailies', 'DailyController@getIndex');
     Route::get('dailies/create', 'DailyController@getCreateDaily');
@@ -335,7 +335,7 @@ Route::group(['prefix' => 'data', 'namespace' => 'Data', 'middleware' => 'power:
     Route::post('dailies/create', 'DailyController@postCreateEditDaily');
     Route::post('dailies/edit/{id?}', 'DailyController@postCreateEditDaily');
     Route::post('dailies/delete/{id}', 'DailyController@postDeleteDaily');
-    Route::post('dailies/sort', 'DailyController@postSortDaily'); 
+    Route::post('dailies/sort', 'DailyController@postSortDaily');
 
     // DYNAMIC LIMITS
     Route::get('limits', 'LimitController@getIndex');
