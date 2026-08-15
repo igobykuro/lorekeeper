@@ -126,8 +126,8 @@ class SubmissionController extends Controller {
             'expanded_rewards'           => config('lorekeeper.extensions.character_reward_expansion.expanded'),
             'criteria'               	   => $prompt ? Criterion::active()->whereIn('id', $promptCriteria)->orderBy('name')->pluck('name', 'id') : null,
             'userGallerySubmissions'     => $gallerySubmissions,
-            'awards'              => Award::orderBy('name')->released()->where('is_user_owned', 1)->pluck('name', 'id'),
-            'characterAwards'     => Award::orderBy('name')->released()->where('is_character_owned', 1)->pluck('name', 'id'),
+            'awards'                     => Award::orderBy('name')->released()->where('is_user_owned', 1)->pluck('name', 'id'),
+            'characterAwards'            => Award::orderBy('name')->released()->where('is_character_owned', 1)->pluck('name', 'id'),
         ]));
     }
 
@@ -174,8 +174,8 @@ class SubmissionController extends Controller {
             'count'                     => Submission::where('prompt_id', $submission->prompt_id)->where('status', 'Approved')->where('user_id', $submission->user_id)->count(),
             'criteria'                  => Criterion::active()->whereIn('id', $promptCriteria)->orderBy('name')->pluck('name', 'id'),
             'userGallerySubmissions'    => $gallerySubmissions,
-            'awards'              => Award::orderBy('name')->released()->where('is_user_owned', 1)->pluck('name', 'id'),
-            'characterAwards'     => Award::orderBy('name')->released()->where('is_character_owned', 1)->pluck('name', 'id'),
+            'awards'                    => Award::orderBy('name')->released()->where('is_user_owned', 1)->pluck('name', 'id'),
+            'characterAwards'           => Award::orderBy('name')->released()->where('is_character_owned', 1)->pluck('name', 'id'),
         ]));
     }
 
@@ -423,9 +423,9 @@ class SubmissionController extends Controller {
             'raffles'                  => Raffle::where('rolled_at', null)->where('is_active', 1)->orderBy('name')->pluck('name', 'id'),
             'page'                     => 'submission',
             'expanded_rewards'         => config('lorekeeper.extensions.character_reward_expansion.expanded'),
-            'userGallerySubmissions' => [],
-            'awards'                => Award::orderBy('name')->released()->where('is_user_owned', 1)->pluck('name', 'id'),
-            'characterAwards'       => Award::orderBy('name')->released()->where('is_character_owned', 1)->pluck('name', 'id'),
+            'userGallerySubmissions'   => [],
+            'awards'                   => Award::orderBy('name')->released()->where('is_user_owned', 1)->pluck('name', 'id'),
+            'characterAwards'          => Award::orderBy('name')->released()->where('is_character_owned', 1)->pluck('name', 'id'),
         ]));
     }
 
@@ -461,8 +461,8 @@ class SubmissionController extends Controller {
             'expanded_rewards'       => config('lorekeeper.extensions.character_reward_expansion.expanded'),
             'selectedInventory'      => isset($submission->data['user']) ? parseAssetData($submission->data['user']) : null,
             'userGallerySubmissions' => [],
-            'awards'                => Award::orderBy('name')->released()->where('is_user_owned', 1)->pluck('name', 'id'),
-            'characterAwards'       => Award::orderBy('name')->released()->where('is_character_owned', 1)->pluck('name', 'id'),
+            'awards'                 => Award::orderBy('name')->released()->where('is_user_owned', 1)->pluck('name', 'id'),
+            'characterAwards'        => Award::orderBy('name')->released()->where('is_character_owned', 1)->pluck('name', 'id'),
         ]));
     }
 

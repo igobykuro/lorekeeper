@@ -119,7 +119,7 @@ function parse($text, &$pings = null) {
     $config->set('HTML.DefinitionRev', 2);
     $config->set('CSS.Proprietary', true);
     $config->set('CSS.AllowImportant', true);
-    
+
     if ($def = $config->maybeGetRawHTMLDefinition()) {
         $def->addElement('include', 'Block', 'Empty', 'Common', ['file*' => 'URI', 'height' => 'Text', 'width' => 'Text']);
         $def->addAttribute('a', 'data-toggle', 'Enum#collapse,tab');

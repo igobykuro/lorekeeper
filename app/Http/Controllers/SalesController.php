@@ -2,18 +2,17 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Sales\Sales;
+use App\Models\Sales\SalesCharacter;
+use App\Services\SalesManager;
+// use Auth;
+
+use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\View;
-//use Auth;
 
-use App\Http\Controllers\Controller;
-use App\Services\SalesManager;
-use App\Models\Sales\Sales;
-use App\Models\Sales\SalesCharacter;
-
-use Exception;
-//use Request; 
+// use Request;
 
 class SalesController extends Controller {
     /*
@@ -172,8 +171,7 @@ class SalesController extends Controller {
      *
      * @return \Illuminate\Contracts\Support\Renderable
      */
-    public function getSaleRaffleTickets($id, Request $request)
-    {
+    public function getSaleRaffleTickets($id, Request $request) {
         $saleCharacter = SalesCharacter::where('id', $id)->whereIn('type', ['raffle', 'flaffle'])->first();
         if (!$saleCharacter) {
             throw new Exception('Character for sale could not be found.');
@@ -181,10 +179,10 @@ class SalesController extends Controller {
 
         return view('sales.sales_tickets', [
             'character' => $saleCharacter,
-            'tickets' => $saleCharacter->tickets()->with('user')->orderBy('id')->paginate(100),
-            'count' => $saleCharacter->tickets()->count(),
-            'userCount' =>  Auth::check() ? $saleCharacter->tickets()->where('user_id', Auth::user()->id)->count() : 0,
-            'page' => $request->get('page') ? $request->get('page') - 1 : 0
+            'tickets'   => $saleCharacter->tickets()->with('user')->orderBy('id')->paginate(100),
+            'count'     => $saleCharacter->tickets()->count(),
+            'userCount' => Auth::check() ? $saleCharacter->tickets()->where('user_id', Auth::user()->id)->count() : 0,
+            'page'      => $request->get('page') ? $request->get('page') - 1 : 0,
         ]);
     }
 }

@@ -9,7 +9,7 @@ class AddUserAwardsTable extends Migration {
      * Run the migrations.
      */
     public function up() {
-        //oopsie! I forgot to add the user_awards table
+        // oopsie! I forgot to add the user_awards table
         // welp, here it is!
         Schema::create('user_awards', function (Blueprint $table) {
             $table->engine = 'InnoDB';
@@ -24,7 +24,7 @@ class AddUserAwardsTable extends Migration {
             $table->integer('trade_count')->unsigned()->default(0);
             $table->unsignedInteger('submission_count')->default(0);
             $table->enum('holding_type', ['Update', 'Trade'])->nullable()->default(null);
-            $table->integer('holding_id')->unsigned()->nullable()->default(null); //might remove these later gonna keep it in to test for now
+            $table->integer('holding_id')->unsigned()->nullable()->default(null); // might remove these later gonna keep it in to test for now
             $table->timestamp('created_at')->nullable()->default(null);
             $table->timestamp('updated_at')->nullable()->default(null);
             $table->softDeletes();
